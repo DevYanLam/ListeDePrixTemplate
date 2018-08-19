@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using ListeDePrixNovago.PDFTemplate;
+using Microsoft.Win32;
+using MigraDoc.DocumentObjectModel;
+using MigraDoc.DocumentObjectModel.Tables;
+using MigraDoc.Rendering;
+using PdfSharp.Pdf;
 
 namespace ListeDePrixNovago
 {
@@ -20,9 +17,198 @@ namespace ListeDePrixNovago
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        private PriceListConfig config;
+        private string pdfFileName;
+
         public MainWindow()
         {
             InitializeComponent();
+            ShowConfig();
+        }
+
+        private void showPDF()
+        {
+            try
+            {
+                //Create a PDF document
+                Document doc = new Document();
+
+                //Create a section inside the document
+                Section template = doc.AddSection();
+
+                //Headers
+                MigraDoc.DocumentObjectModel.Shapes.Image logo = template.AddImage(config.LogoPath);
+                logo.ScaleWidth = 0.5;
+                logo.ScaleHeight = 0.5;
+
+                template.AddParagraph();
+                template.AddParagraph();
+                template.AddParagraph();
+
+                template.AddParagraph(TitleSet.Text);
+
+                template.AddParagraph();
+                template.AddParagraph();
+                template.AddParagraph();
+
+                //Excel Table
+                ExcelReader r = new ExcelReader(ExcelFilePath.Text);
+                Table t = template.AddTable();
+                r.ExcelTable(t);
+
+                //Footers
+                DateTime input = DateTime.Today;
+                int deltaMonday = DayOfWeek.Monday - input.DayOfWeek;
+                DateTime monday = input.AddDays(deltaMonday);
+                int deltaSunday = DayOfWeek.Sunday - input.DayOfWeek;
+                DateTime sunday = input.AddDays(deltaSunday);
+                string validText = "";
+                if (config.IsValidityDateInFooter)
+                    validText = "Valide du " + monday.ToShortDateString() + " au " + sunday.ToShortDateString() + "\n";
+                string contactText = validText + config.Footer;
+                template.Footers.Primary.AddParagraph(contactText);
+
+                PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(false, PdfFontEmbedding.Always);
+                pdfRenderer.Document = doc;
+                pdfRenderer.RenderDocument();
+                pdfFileName = Environment.CurrentDirectory + "\\" + TitleSet.Text + ".pdf";
+                pdfRenderer.PdfDocument.Save(pdfFileName);
+                var p = Process.Start(pdfFileName);
+                p.WaitForExit();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Un problème est survenu durant la création du fichier PDF\n" + ex.Message);
+            }
+        }
+
+        private void ShowLogo()
+        {
+            try
+            {
+                BitmapImage b = new BitmapImage();
+                b.BeginInit();
+                b.UriSource = new Uri(this.LogoPath.Text);
+                b.EndInit();
+                this.LogoPreview.Source = b;
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Impossible de présenter le logo");
+            }
+        }
+
+       
+
+        private void LogoButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OpenFileDialog fileChooser = new OpenFileDialog();
+                fileChooser.Filter = "PNG File (*.png)|*.png|JPG File (*.jpg)|*.jpg";
+                fileChooser.Title = "Sélectionnez un logo";
+
+                if (fileChooser.ShowDialog() == true)
+                {
+                    this.LogoPath.Text = fileChooser.FileName;
+                    File.Copy(fileChooser.FileName, Environment.CurrentDirectory + "/" + fileChooser.SafeFileName, true);
+                    ShowLogo();
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
+        }
+
+        private void ExcelFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                OpenFileDialog fileChooser = new OpenFileDialog();
+                fileChooser.Filter = "Excel File (*.xls)|*.xls|Excel File (*.xlsx)|*.xlsx";
+                fileChooser.Title = "Sélectionnez un logo";
+
+                if (fileChooser.ShowDialog() == true)
+                {
+                    this.ExcelFilePath.Text = fileChooser.FileName;
+                    File.Copy(fileChooser.FileName, Environment.CurrentDirectory + "/" + fileChooser.SafeFileName, true);
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void ApplySettings_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                PriceListConfig config = new PriceListConfig();
+                config.LogoPath = LogoPath.Text;
+                config.Footer = FooterSet.Text;
+                if (IsValidityFooter.IsChecked == null)
+                    config.IsValidityDateInFooter = false;
+                else
+                {
+                    config.IsValidityDateInFooter = (bool)IsValidityFooter.IsChecked;
+                }
+                config.SmtpServer = SmtpServerSet.Text;
+                config.SmtpPort = Int32.Parse(SmtpServerPort.Text);
+                config.SmtpUsername = SmtpUsernameSet.Text;
+                config.SmtpPassword = SmtpPasswordSet.Password;
+
+                if (MessageBox.Show("Voulez-vous enregistrer la configuration?", "Enregistrement des paramètres", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    SaveXml.SaveData(config, Environment.CurrentDirectory + "/config.xml");
+
+                ShowConfig();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Impossible de sauvegarder la configuration\n" + ex.Message);
+            }
+        }
+
+        private void ShowConfig()
+        {
+            try
+            {
+                PriceListConfig config = SaveXml.GetData(Environment.CurrentDirectory + "/config.xml");
+                this.config = config;
+                LogoPath.Text = config.LogoPath;
+                FooterSet.Text = config.Footer;
+                IsValidityFooter.IsChecked = config.IsValidityDateInFooter;
+                SmtpServerSet.Text = config.SmtpServer;
+                SmtpUsernameSet.Text = config.SmtpUsername;
+                SmtpPasswordSet.Password = config.SmtpPassword;
+                SmtpServerPort.Text = config.SmtpPort.ToString();
+                ShowLogo();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Impossible de lire le fichier de configuration\n" + ex.Message);
+            }
+            
+        }
+
+        private void SendEmailButton_Click(object sender, RoutedEventArgs e)
+        {
+            showPDF();
+            if(MessageBox.Show("Voulez-vous envoyer ce document à " + RecipientsEmail.Text + "?", "Confirmation d'envoie", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            {
+                try
+                {
+                    SendEmail sm = new SendEmail(SmtpServerSet.Text, Int32.Parse(SmtpServerPort.Text), SmtpUsernameSet.Text, SmtpPasswordSet.Password);
+                    sm.SendPriceList(SmtpUsernameSet.Text, RecipientsEmail.Text.Split(';'), TitleSet.Text, pdfFileName);
+                    MessageBox.Show("Le courriel a bien été envoyé");
+                }catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
     }
 }
