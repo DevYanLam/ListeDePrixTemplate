@@ -1,7 +1,11 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using ListeDePrixNovago.PDFTemplate;
 using Microsoft.Win32;
@@ -20,7 +24,7 @@ namespace ListeDePrixNovago
 
         private PriceListConfig config;
         private string pdfFileName;
-
+       
         public MainWindow()
         {
             InitializeComponent();
@@ -36,9 +40,11 @@ namespace ListeDePrixNovago
 
                 //Create a section inside the document
                 Section template = doc.AddSection();
+                template.PageSetup.FooterDistance = new Unit(0, UnitType.Point);
+                template.PageSetup.DifferentFirstPageHeaderFooter = true;
 
                 //Headers
-                MigraDoc.DocumentObjectModel.Shapes.Image logo = template.AddImage(config.LogoPath);
+                MigraDoc.DocumentObjectModel.Shapes.Image logo = template.Headers.FirstPage.AddImage(config.LogoPath);
                 logo.ScaleWidth = 0.5;
                 logo.ScaleHeight = 0.5;
 
@@ -46,7 +52,11 @@ namespace ListeDePrixNovago
                 template.AddParagraph();
                 template.AddParagraph();
 
-                template.AddParagraph(TitleSet.Text);
+                template.Headers.FirstPage.AddParagraph();
+                Paragraph titre = template.Headers.FirstPage.AddParagraph(TitleSet.Text);
+                titre.Format.Font.Bold = true;
+                titre.Format.Alignment = ParagraphAlignment.Center;
+                titre.Format.Font.Size = new Unit(16,UnitType.Point);
 
                 template.AddParagraph();
                 template.AddParagraph();
@@ -55,6 +65,7 @@ namespace ListeDePrixNovago
                 //Excel Table
                 ExcelReader r = new ExcelReader(ExcelFilePath.Text);
                 Table t = template.AddTable();
+                t.KeepTogether = true;
                 r.ExcelTable(t);
 
                 //Footers
@@ -65,9 +76,11 @@ namespace ListeDePrixNovago
                 DateTime sunday = input.AddDays(deltaSunday);
                 string validText = "";
                 if (config.IsValidityDateInFooter)
-                    validText = "Valide du " + monday.ToShortDateString() + " au " + sunday.ToShortDateString() + "\n";
+                    validText = "Valide du " + monday.ToShortDateString() + " au " + sunday.ToShortDateString() + "\n\n";
                 string contactText = validText + config.Footer;
-                template.Footers.Primary.AddParagraph(contactText);
+                template.AddParagraph();
+                template.AddParagraph();
+                template.AddParagraph(contactText);
 
                 PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(false, PdfFontEmbedding.Always);
                 pdfRenderer.Document = doc;
@@ -189,7 +202,7 @@ namespace ListeDePrixNovago
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Impossible de lire le fichier de configuration\n" + ex.Message);
+                MessageBox.Show("Impossible de lire le fichier de configuration. Il est peut-être vide.");
             }
             
         }
@@ -209,6 +222,20 @@ namespace ListeDePrixNovago
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
+
+        public void RemoveText(object sender, EventArgs e)
+        {
+            TextBox tb = (TextBox)sender;
+            if(tb.Text.Equals("Séparez les adresses courriels par des points-virgules."))
+            tb.Text = "";
+        }
+
+        public void AddText(object sender, EventArgs e)
+        {
+            TextBox tb = (TextBox)sender;
+            if (string.IsNullOrWhiteSpace(tb.Text))
+                tb.Text = "Séparez les adresses courriels par des points-virgules.";
         }
     }
 }

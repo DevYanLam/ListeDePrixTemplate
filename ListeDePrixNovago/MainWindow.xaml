@@ -5,18 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ListeDePrixNovago"
         mc:Ignorable="d"
-        Title="Liste de Prix Coop Novago" Height="430" Width="670" MinHeight="430" MinWidth="670">
+        Title="Liste de Prix Coop Novago" Height="454.47" Width="725.614" MinHeight="430" MinWidth="670" Icon="coop.ico">
     <Grid>
         <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabItem Header="Liste de prix" Margin="0,0,-2,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid Background="#FFE5E5E5">
                     <Button x:Name="ExcelFileButton" Content="Fichier de prix..." HorizontalAlignment="Left" Margin="30,30,0,0" VerticalAlignment="Top" Width="93" Height="23" Click="ExcelFileButton_Click"/>
-                    <TextBox x:Name="ExcelFilePath" HorizontalAlignment="Left" Height="23" Margin="128,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="349"/>
+                    <TextBox x:Name="ExcelFilePath" TabIndex="0" HorizontalAlignment="Left" Height="23" Margin="128,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="349"/>
                     <Label Content="Envoyer à" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="30,89,0,0" VerticalAlignment="Top" Width="93"/>
-                    <TextBox x:Name="RecipientsEmail" AcceptsReturn="True" HorizontalAlignment="Left" Height="79" Margin="128,89,0,0" TextWrapping="Wrap" Text="Séparez les adresses courriels par des points-virgules." VerticalAlignment="Top" Width="349"/>
-                    <Button x:Name="SendEmailButton" Content="Envoyer" HorizontalAlignment="Left" Margin="128,244,0,0" VerticalAlignment="Top" Width="93" Click="SendEmailButton_Click"/>
+                    <TextBox x:Name="RecipientsEmail" TabIndex="2" AcceptsReturn="True" HorizontalAlignment="Left" Height="79" Margin="128,89,0,0" TextWrapping="Wrap" Text="Séparez les adresses courriels par des points-virgules." VerticalAlignment="Top" Width="349" GotFocus="RemoveText" LostFocus="AddText"/>
+                    <Button x:Name="SendEmailButton" TabIndex="3" Content="Envoyer" HorizontalAlignment="Left" Margin="128,244,0,0" VerticalAlignment="Top" Width="93" Click="SendEmailButton_Click"/>
                     <Label Content="Titre" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="30,58,0,0" VerticalAlignment="Top" Width="93"/>
-                    <TextBox x:Name="TitleSet" HorizontalAlignment="Left" Height="26" Margin="128,58,0,0" TextWrapping="Wrap" Text="Liste de prix" VerticalAlignment="Top" Width="349"/>
+                    <TextBox x:Name="TitleSet" TabIndex="1" HorizontalAlignment="Left" Height="26" Margin="128,58,0,0" TextWrapping="Wrap" Text="Liste de prix" VerticalAlignment="Top" Width="349"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Paramètres">

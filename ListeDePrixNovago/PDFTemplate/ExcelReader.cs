@@ -62,7 +62,8 @@ namespace ListeDePrixNovago.PDFTemplate
 
             for (int x = 0; x < dataReader.FieldCount; x++)
             {
-                lastRow.Cells[x].AddParagraph(dataReader.GetName(x));
+                Paragraph para = lastRow.Cells[x].AddParagraph(dataReader.GetName(x).ToUpper());
+                para.Format.Font.Bold = true;
             }
 
 
