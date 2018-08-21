@@ -129,12 +129,21 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="CircularProgressBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PDFTemplate\ExcelReader.cs" />
-    <Compile Include="PDFTemplate\PriceListConfig.cs" />
-    <Compile Include="PDFTemplate\SaveXml.cs" />
-    <Compile Include="PDFTemplate\SendEmail.cs" />
+    <Compile Include="TemplateUtility\ExcelReader.cs" />
+    <Compile Include="TemplateUtility\PriceListConfig.cs" />
+    <Compile Include="Utility\CatalogItem.cs" />
+    <Compile Include="CircularProgressBar.xaml.cs">
+      <DependentUpon>CircularProgressBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Utility\Column.cs" />
+    <Compile Include="Utility\SaveXml.cs" />
+    <Compile Include="Utility\SendEmail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

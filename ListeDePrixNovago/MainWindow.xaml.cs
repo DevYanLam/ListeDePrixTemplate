@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using ListeDePrixNovago.PDFTemplate;
 using Microsoft.Win32;
 using MigraDoc.DocumentObjectModel;
@@ -31,15 +32,19 @@ namespace ListeDePrixNovago
             ShowConfig();
         }
 
-        private void showPDF()
+        private void showPDF(TableType type)
         {
             try
             {
                 //Create a PDF document
                 Document doc = new Document();
+                
 
                 //Create a section inside the document
                 Section template = doc.AddSection();
+                
+                template.PageSetup.RightMargin = 30;
+                template.PageSetup.LeftMargin = 30;
                 template.PageSetup.FooterDistance = new Unit(0, UnitType.Point);
                 template.PageSetup.DifferentFirstPageHeaderFooter = true;
 
@@ -63,11 +68,8 @@ namespace ListeDePrixNovago
                 template.AddParagraph();
 
                 //Excel Table
-                ExcelReader r = new ExcelReader(ExcelFilePath.Text);
-                Table t = template.AddTable();
-                t.KeepTogether = true;
-                r.ExcelTable(t);
-
+                CreateTable(ExcelFilePath.Text, template, type);
+                
                 //Footers
                 DateTime input = DateTime.Today;
                 int deltaMonday = DayOfWeek.Monday - input.DayOfWeek;
@@ -93,6 +95,21 @@ namespace ListeDePrixNovago
             catch(Exception ex)
             {
                 MessageBox.Show("Un problème est survenu durant la création du fichier PDF\n" + ex.Message);
+            }
+        }
+
+        private void CreateTable(string excelFilePath, Section section, TableType type)
+        {
+            ExcelReader r = new ExcelReader(excelFilePath);
+            if (type == TableType.PriceList)
+            {
+                Table t = section.AddTable();
+                t.KeepTogether = true;
+                r.ExcelTable(t);
+            }
+            else if(type == TableType.CatalogList)
+            {
+                r.AddPriceCatalogTables(section);
             }
         }
 
@@ -207,21 +224,33 @@ namespace ListeDePrixNovago
             
         }
 
-        private void SendEmailButton_Click(object sender, RoutedEventArgs e)
+        private void SendEmail()
         {
-            showPDF();
-            if(MessageBox.Show("Voulez-vous envoyer ce document à " + RecipientsEmail.Text + "?", "Confirmation d'envoie", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            if (MessageBox.Show("Voulez-vous envoyer ce document à " + RecipientsEmail.Text + "?", "Confirmation d'envoie", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
             {
                 try
                 {
                     SendEmail sm = new SendEmail(SmtpServerSet.Text, Int32.Parse(SmtpServerPort.Text), SmtpUsernameSet.Text, SmtpPasswordSet.Password);
                     sm.SendPriceList(SmtpUsernameSet.Text, RecipientsEmail.Text.Split(';'), TitleSet.Text, pdfFileName);
                     MessageBox.Show("Le courriel a bien été envoyé");
-                }catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
+
+        private void SendEmailButton_Click(object sender, RoutedEventArgs e)
+        {
+            showPDF(TableType.PriceList);
+            SendEmail();
+        }
+
+        private void SendCatalog_Click(object sender, RoutedEventArgs e)
+        {
+            showPDF(TableType.CatalogList);
+            SendEmail();
         }
 
         public void RemoveText(object sender, EventArgs e)
@@ -236,6 +265,11 @@ namespace ListeDePrixNovago
             TextBox tb = (TextBox)sender;
             if (string.IsNullOrWhiteSpace(tb.Text))
                 tb.Text = "Séparez les adresses courriels par des points-virgules.";
+        }
+
+        private void Gabarit_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
