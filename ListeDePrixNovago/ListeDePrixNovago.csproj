@@ -30,7 +30,7 @@
     <PublisherName>Coop Novago</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>listedeprix.htm</WebPage>
-    <ApplicationRevision>3</ApplicationRevision>
+    <ApplicationRevision>5</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -142,6 +142,7 @@
       <DependentUpon>CircularProgressBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utility\Column.cs" />
+    <Compile Include="Utility\ListItem.cs" />
     <Compile Include="Utility\SaveXml.cs" />
     <Compile Include="Utility\SendEmail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

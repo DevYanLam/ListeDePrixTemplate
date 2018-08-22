@@ -11,6 +11,7 @@ using System.Data.OleDb;
 using Microsoft.Office.Interop;
 using System.Collections.ObjectModel;
 using ListeDePrixNovago.Utility;
+using System.Reflection;
 
 namespace ListeDePrixNovago.PDFTemplate
 {
@@ -18,7 +19,6 @@ namespace ListeDePrixNovago.PDFTemplate
     public class ExcelReader
     {
         private string excelFilePath;
-        private OleDbConnection con;
         private double scaleRowHeight = 2;
         private List<Utility.Column> columns = new List<Utility.Column>()
         {
@@ -33,7 +33,11 @@ namespace ListeDePrixNovago.PDFTemplate
             new Utility.Column(){Name = "Prix5", Size = 10 },
 
         };
-        
+        private Dictionary<string, List<string>> catalogAttributes;
+        private List<CatalogItem> catalogItems;
+        private List<ListItem> listItems;
+        private OleDbDataReader dataReader;
+
 
         public string ExcelFilePath { get => excelFilePath; set => excelFilePath = value; }
         
@@ -42,29 +46,39 @@ namespace ListeDePrixNovago.PDFTemplate
             this.ExcelFilePath = excelFilePath;
         }
 
-        private OleDbDataReader Reader(string fieldsToSelect = "*")
+        private void Reader(TableType type)
         {
             string workSheetName = GetWorksheetName(excelFilePath);
             string connStr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + excelFilePath + ";Extended Properties=Excel 12.0;";
-            con = new OleDbConnection(connStr);
+            using (OleDbConnection con = new OleDbConnection(connStr))
+            {
+                con.Open();
 
-            con.Open();
+                StringBuilder stbQuery = new StringBuilder();
+                stbQuery.Append("SELECT * FROM [" + workSheetName + "$]");
+                OleDbCommand command = new OleDbCommand(stbQuery.ToString(), con);
 
-            StringBuilder stbQuery = new StringBuilder();
-            stbQuery.Append("SELECT " + fieldsToSelect + " FROM [" + workSheetName + "$]");
-            OleDbCommand command = new OleDbCommand(stbQuery.ToString(), con);
+                dataReader = command.ExecuteReader();
 
-            OleDbDataReader dataReader = command.ExecuteReader();
-
-            return dataReader;
+                if (type == TableType.CatalogList)
+                {
+                    GetCatalogItem(dataReader);
+                    GetAttributes();
+                }
+                else if (type == TableType.PriceList)
+                {
+                    GetListItems(dataReader);
+                }
+                dataReader.Close();
+                con.Close();
+                con.Dispose();
+            }
         }
 
 
 
-        public Table ExcelTable(Table t)
+        public Table AddListPrice(Table t)
         {
-            
-            OleDbDataReader dataReader = Reader();
             t.Borders.Bottom.Visible = true;
             double columnSize = (t.Document.DefaultPageSetup.PageWidth - (t.Document.DefaultPageSetup.RightMargin * 2)) / dataReader.FieldCount;
             for (int x = 0; x < dataReader.FieldCount; x++)
@@ -79,52 +93,45 @@ namespace ListeDePrixNovago.PDFTemplate
                 para.Format.Font.Bold = true;
             }
             bool isFirstRow = true;
-            try
+            foreach(ListItem item in listItems)
             {
-                while (dataReader.Read())
-                {
-                    //if (isFirstRow)
-                    t.AddRow();
-                    for (int x = 0; x < dataReader.FieldCount; x++)
-                    {
-                        lastRow = (Row)t.Rows.LastObject;
-                        lastRow.Cells[x].AddParagraph(dataReader[x].ToString());
-                        if (x == dataReader.FieldCount - 1)
-                        {
-                            t.AddRow();
-                        }
-                    }
-                    isFirstRow = false;
-                }
+                t.AddRow();
+                
                 lastRow = (Row)t.Rows.LastObject;
-                t.Rows.RemoveObjectAt(lastRow.Index);
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-            finally
-            {
-                dataReader.Close();
-                con.Close();
+                lastRow.Cells[0].AddParagraph(item.Id);
+                lastRow.Cells[1].AddParagraph(item.Description);
+                lastRow.Cells[2].AddParagraph(item.Price.ToString());
             }
             
-            
-
+            lastRow = (Row)t.Rows.LastObject;
+            t.Rows.RemoveObjectAt(lastRow.Index);
             return t;
+        }
+
+        private void GetListItems(OleDbDataReader reader)
+        {
+            listItems = new List<ListItem>();
+            while(reader.Read())
+            {
+                listItems.Add(new ListItem()
+                {
+                    Id = reader[0].ToString(),
+                    Description = reader[1].ToString(),
+                    Price = reader.GetDouble(2)
+                });
+            }
         }
 
         public void AddPriceCatalogTables(Section section)
         {
+            Reader(TableType.CatalogList);
             section.PageSetup.PageWidth = new Unit(8.5, UnitType.Inch);
             section.PageSetup.PageHeight = new Unit(11, UnitType.Inch);
             section.PageSetup.Orientation = MigraDoc.DocumentObjectModel.Orientation.Landscape;
-            var att = GetAttributes();
-            var catalog = GetCatalogItem();
             bool isFirstRow = true;
             bool isFirstSubRow = true;
             bool isFirstTable = true;
-            foreach(KeyValuePair<string, List<string>> entry in att)
+            foreach(KeyValuePair<string, List<string>> entry in catalogAttributes)
             {
                 isFirstRow = true;
                 section.AddTable();
@@ -172,7 +179,7 @@ namespace ListeDePrixNovago.PDFTemplate
                 foreach(string subAtt in entry.Value)
                 {
                     isFirstSubRow = true;
-                    foreach(CatalogItem item in catalog.Where(a => a.Attribut2 == subAtt))
+                    foreach(CatalogItem item in catalogItems.Where(a => a.Attribut2 == subAtt))
                     {
                         lastTable.AddRow();
                         Row lastRow = (Row)lastTable.Rows.LastObject;
@@ -205,61 +212,51 @@ namespace ListeDePrixNovago.PDFTemplate
                 lastR.Borders.Bottom.Visible = true;
                 section.AddParagraph();
             }
-            
         }
-
-        private List<string> GetColumns()
+        private void GetAttributes()
         {
-            List<string> columns = new List<string>();
-            OleDbDataReader dataReader = Reader();
-            for(int x = 0; x < dataReader.FieldCount; x++)
-            {
-                columns.Add(dataReader.GetName(x));
-            }
-            return columns;
-        }
+            catalogAttributes = new Dictionary<string, List<string>>();
 
-        private Dictionary<string, List<string>> GetAttributes()
-        {
-            Dictionary<string, List<string>> res = new Dictionary<string, List<string>>();
-            OleDbDataReader dataReader = Reader("distinct attribut1, attribut2");
-            while (dataReader.Read())
+            var req = (from a in catalogItems
+                       select new
+                       {
+                           Att1 = a.Attribut1,
+                           Att2 = a.Attribut2
+                       }).Distinct();
+
+            foreach(var item in req)
             {
-                if (!res.ContainsKey(dataReader[0].ToString()))
+                if(!catalogAttributes.ContainsKey(item.Att1))
                 {
-                    List<string> attList = new List<string>();
-                    attList.Add(dataReader[1].ToString());
-                    res.Add(dataReader[0].ToString(), attList);
-                }
-                else
+                    List<string> att = new List<string>();
+                    att.Add(item.Att2);
+                    catalogAttributes.Add(item.Att1, att);
+                } else
                 {
-                    res.First(a => a.Key == dataReader[0].ToString()).Value.Add(dataReader[1].ToString());
+                    catalogAttributes.First(a => a.Key == item.Att1).Value.Add(item.Att2);
                 }
             }
-            return res;
         }
 
-        private List<CatalogItem> GetCatalogItem()
+        private void GetCatalogItem(OleDbDataReader reader)
         {
-            List<CatalogItem> ci = new List<CatalogItem>();
-            OleDbDataReader dataReader = Reader();
-            while (dataReader.Read())
-            {
-                ci.Add(new CatalogItem()
+            catalogItems = new List<CatalogItem>();
+                while (reader.Read())
                 {
-                    Attribut1 = dataReader[0].ToString(),
-                    Attribut2 = dataReader[1].ToString(),
-                    Id = dataReader[2].ToString(),
-                    Description = dataReader[3].ToString(),
-                    Um = dataReader[4].ToString(),
-                    Prix1= dataReader.GetDouble(5),
-                    Prix2 = dataReader.GetDouble(6),
-                    Prix3 = dataReader.GetDouble(7),
-                    Prix4 = dataReader.GetDouble(8),
-                    Prix5 = dataReader.GetDouble(9)
-                });
-            }
-                return ci;
+                catalogItems.Add(new CatalogItem()
+                    {
+                        Attribut1 = reader[0].ToString(),
+                        Attribut2 = reader[1].ToString(),
+                        Id = reader[2].ToString(),
+                        Description = reader[3].ToString(),
+                        Um = reader[4].ToString(),
+                        Prix1 = reader.GetDouble(5),
+                        Prix2 = reader.GetDouble(6),
+                        Prix3 = reader.GetDouble(7),
+                        Prix4 = reader.GetDouble(8),
+                        Prix5 = reader.GetDouble(9)
+                    });
+                }
         }
 
         public static string GetWorksheetName(string fileName)

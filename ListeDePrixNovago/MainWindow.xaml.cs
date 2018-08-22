@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -32,7 +33,7 @@ namespace ListeDePrixNovago
             ShowConfig();
         }
 
-        private void showPDF(TableType type)
+        private bool showPDF(TableType type)
         {
             try
             {
@@ -95,7 +96,9 @@ namespace ListeDePrixNovago
             catch(Exception ex)
             {
                 MessageBox.Show("Un problème est survenu durant la création du fichier PDF\n" + ex.Message);
+                return false;
             }
+            return true;
         }
 
         private void CreateTable(string excelFilePath, Section section, TableType type)
@@ -105,7 +108,7 @@ namespace ListeDePrixNovago
             {
                 Table t = section.AddTable();
                 t.KeepTogether = true;
-                r.ExcelTable(t);
+                r.AddListPrice(t);
             }
             else if(type == TableType.CatalogList)
             {
@@ -163,8 +166,13 @@ namespace ListeDePrixNovago
 
                 if (fileChooser.ShowDialog() == true)
                 {
-                    this.ExcelFilePath.Text = fileChooser.FileName;
-                    File.Copy(fileChooser.FileName, Environment.CurrentDirectory + "/" + fileChooser.SafeFileName, true);
+                    string newPath = Environment.CurrentDirectory + "/" + fileChooser.SafeFileName;
+                    this.ExcelFilePath.Text = newPath;
+                    File.Copy(fileChooser.FileName, newPath, true);
+
+                    /*ExcelReader re = new ExcelReader(newPath);
+                    List<string> columns = re.GetColumns();
+                    DropDownPrice.ItemsSource = columns.FindAll(a => a.Contains("prix"));*/
                 }
             }
             catch(Exception ex)
@@ -243,14 +251,14 @@ namespace ListeDePrixNovago
 
         private void SendEmailButton_Click(object sender, RoutedEventArgs e)
         {
-            showPDF(TableType.PriceList);
-            SendEmail();
+            if(showPDF(TableType.PriceList))
+                SendEmail();
         }
 
         private void SendCatalog_Click(object sender, RoutedEventArgs e)
         {
-            showPDF(TableType.CatalogList);
-            SendEmail();
+            if(showPDF(TableType.CatalogList))
+                SendEmail();
         }
 
         public void RemoveText(object sender, EventArgs e)

@@ -15,7 +15,7 @@
                     <Label Content="Envoyer à" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="30,89,0,0" VerticalAlignment="Top" Width="93"/>
                     <TextBox x:Name="RecipientsEmail" TabIndex="2" AcceptsReturn="True" HorizontalAlignment="Left" Height="79" Margin="128,89,0,0" TextWrapping="Wrap" Text="Séparez les adresses courriels par des points-virgules." VerticalAlignment="Top" Width="349" GotFocus="RemoveText" LostFocus="AddText"/>
                     <Button x:Name="SendEmailButton" TabIndex="3" Content="Envoyer Liste De Prix" HorizontalAlignment="Left" Margin="128,194,0,0" VerticalAlignment="Top" Width="192" Click="SendEmailButton_Click"/>
-                    <Button x:Name="SendCatalogButton" TabIndex="3" Content="Envoyer Catalogue De Prix" HorizontalAlignment="Left" Margin="128,219,0,0" VerticalAlignment="Top" Width="192" Click="SendCatalog_Click"/>
+                    <Button x:Name="SendCatalogButton" TabIndex="4" Content="Envoyer Catalogue De Prix" HorizontalAlignment="Left" Margin="128,219,0,0" VerticalAlignment="Top" Width="192" Click="SendCatalog_Click"/>
                     <TextBlock Width="50" Height="25" Margin="73,219,589,156">           
                         <Hyperlink x:Name="Gabarit" NavigateUri="http://www.google.com" Click="Gabarit_Click">
                             Gabarit
@@ -23,6 +23,7 @@
                     </TextBlock>
                     <Label Content="Titre" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="30,58,0,0" VerticalAlignment="Top" Width="93"/>
                     <TextBox x:Name="TitleSet" TabIndex="1" HorizontalAlignment="Left" Height="26" Margin="128,58,0,0" TextWrapping="Wrap" Text="Liste de prix" VerticalAlignment="Top" Width="349"/>
+                    <ComboBox x:Name="DropDownPrice" HorizontalAlignment="Left" Margin="357,219,0,0" VerticalAlignment="Top" Width="120"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Paramètres">
@@ -31,17 +32,17 @@
                     <TextBox x:Name="LogoPath" HorizontalAlignment="Left" Height="23" Margin="100,17,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="294"/>
                     <Image x:Name="LogoPreview" HorizontalAlignment="Left" Height="103" Margin="399,17,0,0" VerticalAlignment="Top" Width="257"/>
                     <Label Content="Pied de Page" HorizontalAlignment="Left" Margin="20,45,0,0" VerticalAlignment="Top" Width="93"/>
-                    <TextBox x:Name="FooterSet" AcceptsReturn="True" HorizontalAlignment="Left" Height="252" Margin="20,76,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="374"/>
+                    <TextBox x:Name="FooterSet" AcceptsReturn="True" TabIndex="1" HorizontalAlignment="Left" Height="252" Margin="20,76,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="374"/>
                     <Label Content="Serveur SMTP" HorizontalAlignment="Left" Margin="399,125,0,0" VerticalAlignment="Top" Width="108"/>
-                    <TextBox x:Name="SmtpServerSet" HorizontalAlignment="Left" Height="23" Margin="399,156,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180"/>
+                    <TextBox x:Name="SmtpServerSet" TabIndex="3" HorizontalAlignment="Left" Height="23" Margin="399,156,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180"/>
                     <Label Content="Nom d'usager" HorizontalAlignment="Left" Margin="399,184,0,0" VerticalAlignment="Top" Width="108"/>
-                    <TextBox x:Name="SmtpUsernameSet" HorizontalAlignment="Left" Height="23" Margin="399,215,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="247"/>
+                    <TextBox x:Name="SmtpUsernameSet" TabIndex="5" HorizontalAlignment="Left" Height="23" Margin="399,215,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="247"/>
                     <Label Content="Mot de passe" HorizontalAlignment="Left" Margin="399,243,0,0" VerticalAlignment="Top" Width="108"/>
-                    <PasswordBox x:Name="SmtpPasswordSet" HorizontalAlignment="Left" Margin="399,274,0,0" VerticalAlignment="Top" Width="247" Height="23"/>
-                    <CheckBox x:Name="IsValidityFooter" Content="Ajouter la période de validité (Du lundi au vendredi)" HorizontalAlignment="Left" Margin="24,333,0,0" VerticalAlignment="Top" Width="370" Height="23"/>
-                    <Button x:Name="ApplySettings" Content="Appliquer" HorizontalAlignment="Left" Margin="399,308,0,0" VerticalAlignment="Top" Width="75" Height="23" Click="ApplySettings_Click"/>
+                    <PasswordBox x:Name="SmtpPasswordSet" TabIndex="6" HorizontalAlignment="Left" Margin="399,274,0,0" VerticalAlignment="Top" Width="247" Height="23"/>
+                    <CheckBox x:Name="IsValidityFooter" TabIndex="2" Content="Ajouter la période de validité (Du lundi au vendredi)" HorizontalAlignment="Left" Margin="24,333,0,0" VerticalAlignment="Top" Width="370" Height="23"/>
+                    <Button x:Name="ApplySettings" TabIndex="7" Content="Appliquer" HorizontalAlignment="Left" Margin="399,308,0,0" VerticalAlignment="Top" Width="75" Height="23" Click="ApplySettings_Click"/>
                     <Label Content="Port" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="603,125,0,0" VerticalAlignment="Top" Width="43"/>
-                    <TextBox x:Name="SmtpServerPort" HorizontalAlignment="Left" Height="23" Margin="603,156,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="37"/>
+                    <TextBox x:Name="SmtpServerPort" TabIndex="4" HorizontalAlignment="Left" Height="23" Margin="603,156,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="37"/>
                 </Grid>
             </TabItem>
 
