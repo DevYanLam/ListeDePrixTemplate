@@ -14,16 +14,19 @@
                     <TextBox x:Name="ExcelFilePath" TabIndex="0" HorizontalAlignment="Left" Height="23" Margin="128,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="349"/>
                     <Label Content="Envoyer à" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="30,89,0,0" VerticalAlignment="Top" Width="93"/>
                     <TextBox x:Name="RecipientsEmail" TabIndex="2" AcceptsReturn="True" HorizontalAlignment="Left" Height="79" Margin="128,89,0,0" TextWrapping="Wrap" Text="Séparez les adresses courriels par des points-virgules." VerticalAlignment="Top" Width="349" GotFocus="RemoveText" LostFocus="AddText"/>
-                    <Button x:Name="SendEmailButton" TabIndex="3" Content="Envoyer Liste De Prix" HorizontalAlignment="Left" Margin="128,194,0,0" VerticalAlignment="Top" Width="192" Click="SendEmailButton_Click"/>
-                    <Button x:Name="SendCatalogButton" TabIndex="4" Content="Envoyer Catalogue De Prix" HorizontalAlignment="Left" Margin="128,219,0,0" VerticalAlignment="Top" Width="192" Click="SendCatalog_Click"/>
-                    <TextBlock Width="50" Height="25" Margin="73,219,589,156">           
+                    <Button x:Name="SendEmailButton" TabIndex="3" Content="Envoyer Liste De Prix" HorizontalAlignment="Left" Margin="128,259,0,0" VerticalAlignment="Top" Width="192" Click="SendEmailButton_Click"/>
+                    <Button x:Name="SendCatalogButton" TabIndex="4" Content="Envoyer Catalogue De Prix" HorizontalAlignment="Left" Margin="128,284,0,0" VerticalAlignment="Top" Width="192" Click="SendCatalog_Click"/>
+                    <TextBlock Width="50" Height="25" Margin="73,284,589,86">           
                         <Hyperlink x:Name="Gabarit" NavigateUri="http://www.google.com" Click="Gabarit_Click">
                             Gabarit
                         </Hyperlink>
                     </TextBlock>
                     <Label Content="Titre" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="30,58,0,0" VerticalAlignment="Top" Width="93"/>
                     <TextBox x:Name="TitleSet" TabIndex="1" HorizontalAlignment="Left" Height="26" Margin="128,58,0,0" TextWrapping="Wrap" Text="Liste de prix" VerticalAlignment="Top" Width="349"/>
-                    <ComboBox x:Name="DropDownPrice" HorizontalAlignment="Left" Margin="357,219,0,0" VerticalAlignment="Top" Width="120"/>
+                    <ComboBox x:Name="DropDownPrice" HorizontalAlignment="Left" Margin="128,173,0,0" VerticalAlignment="Top" Width="349"/>
+                    <ComboBox x:Name="DropDownPriceList" Margin="128,200,235,173"/>
+                    <Label Content="Prix" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="30,173,0,0" VerticalAlignment="Top" Width="93"/>
+                    <Label Content="Liste de Prix" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="10,200,0,0" VerticalAlignment="Top" Width="113"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Paramètres">

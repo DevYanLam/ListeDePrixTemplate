@@ -69,9 +69,6 @@ namespace ListeDePrixNovago.PDFTemplate
                 {
                     GetListItems(dataReader);
                 }
-                dataReader.Close();
-                con.Close();
-                con.Dispose();
             }
         }
 
@@ -110,15 +107,18 @@ namespace ListeDePrixNovago.PDFTemplate
 
         private void GetListItems(OleDbDataReader reader)
         {
-            listItems = new List<ListItem>();
-            while(reader.Read())
+            using (reader)
             {
-                listItems.Add(new ListItem()
+                listItems = new List<ListItem>();
+                while (reader.Read())
                 {
-                    Id = reader[0].ToString(),
-                    Description = reader[1].ToString(),
-                    Price = reader.GetDouble(2)
-                });
+                    listItems.Add(new ListItem()
+                    {
+                        Id = reader[0].ToString(),
+                        Description = reader[1].ToString(),
+                        Price = reader.GetDouble(2)
+                    });
+                }
             }
         }
 
@@ -240,10 +240,12 @@ namespace ListeDePrixNovago.PDFTemplate
 
         private void GetCatalogItem(OleDbDataReader reader)
         {
-            catalogItems = new List<CatalogItem>();
+            using (reader)
+            {
+                catalogItems = new List<CatalogItem>();
                 while (reader.Read())
                 {
-                catalogItems.Add(new CatalogItem()
+                    catalogItems.Add(new CatalogItem()
                     {
                         Attribut1 = reader[0].ToString(),
                         Attribut2 = reader[1].ToString(),
@@ -257,6 +259,13 @@ namespace ListeDePrixNovago.PDFTemplate
                         Prix5 = reader.GetDouble(9)
                     });
                 }
+            }
+        }
+
+        public List<string> GetPriceColumns()
+        {
+            //Method to return the a list of excel columns that contains "prix"
+            return null;
         }
 
         public static string GetWorksheetName(string fileName)
@@ -271,7 +280,13 @@ namespace ListeDePrixNovago.PDFTemplate
 
             Microsoft.Office.Interop.Excel.Worksheet worksheet = (Microsoft.Office.Interop.Excel.Worksheet)sheets.get_Item(1);
 
-            return worksheet.Name;
+            string worksheetName = worksheet.Name;
+
+            theWorkbook.Close();
+
+            ExcelObj.Quit();
+
+            return worksheetName;
         }
         
         
