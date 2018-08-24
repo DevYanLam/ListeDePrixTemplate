@@ -15,7 +15,7 @@ using System.Reflection;
 
 namespace ListeDePrixNovago.PDFTemplate
 {
-    internal enum TableType { PriceList, CatalogList};
+    internal enum TableType { PriceList, CatalogList, ColumnList};
     public class ExcelReader
     {
         private string excelFilePath;
@@ -36,11 +36,13 @@ namespace ListeDePrixNovago.PDFTemplate
         private Dictionary<string, List<string>> catalogAttributes;
         private List<CatalogItem> catalogItems;
         private List<ListItem> listItems;
+        private List<string> columnList;
         private OleDbDataReader dataReader;
 
 
         public string ExcelFilePath { get => excelFilePath; set => excelFilePath = value; }
-        
+        public List<string> ColumnList { get => columnList; }
+
         public ExcelReader(string excelFilePath)
         {
             this.ExcelFilePath = excelFilePath;
@@ -68,6 +70,10 @@ namespace ListeDePrixNovago.PDFTemplate
                 else if (type == TableType.PriceList)
                 {
                     GetListItems(dataReader);
+                }
+                else if(type == TableType.ColumnList)
+                {
+                    GetColumns(dataReader);
                 }
             }
         }
@@ -262,10 +268,26 @@ namespace ListeDePrixNovago.PDFTemplate
             }
         }
 
-        public List<string> GetPriceColumns()
+       
+
+        public IEnumerable<string> GetPriceColumns()
         {
-            //Method to return the a list of excel columns that contains "prix"
-            return null;
+            Reader(TableType.ColumnList);
+            return columnList.Where(a => a.Contains("prix"));
+        }
+
+        private void GetColumns(OleDbDataReader reader)
+        {
+            this.columnList = new List<string>();
+            using (reader)
+            {
+                int x = 0;
+                while(reader.Read() && reader.FieldCount > x+1)
+                {
+                    columnList.Add(reader.GetName(x));
+                    x++;
+                }
+            }
         }
 
         public static string GetWorksheetName(string fileName)

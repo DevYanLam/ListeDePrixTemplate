@@ -170,9 +170,8 @@ namespace ListeDePrixNovago
                     this.ExcelFilePath.Text = newPath;
                     File.Copy(fileChooser.FileName, newPath, true);
 
-                    /*ExcelReader re = new ExcelReader(newPath);
-                    List<string> columns = re.GetColumns();
-                    DropDownPrice.ItemsSource = columns.FindAll(a => a.Contains("prix"));*/
+                    ExcelReader re = new ExcelReader(newPath);
+                    DropDownPrice.ItemsSource = re.GetPriceColumns();
                 }
             }
             catch(Exception ex)
