@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ListeDePrixNovago.PDFTemplate;
+using ListeDePrixNovago.Utility;
 using Microsoft.Win32;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Tables;
@@ -69,7 +70,7 @@ namespace ListeDePrixNovago
                 template.AddParagraph();
 
                 //Excel Table
-                CreateTable(ExcelFilePath.Text, template, type);
+                CreateTable(ExcelFilePath.Text, template, type, GetCheckedItems());
                 
                 //Footers
                 DateTime input = DateTime.Today;
@@ -101,18 +102,21 @@ namespace ListeDePrixNovago
             return true;
         }
 
-        private void CreateTable(string excelFilePath, Section section, TableType type)
+        private void CreateTable(string excelFilePath, Section section, TableType type, List<Price> priceList)
         {
             ExcelReader r = new ExcelReader(excelFilePath);
             if (type == TableType.PriceList)
             {
                 Table t = section.AddTable();
                 t.KeepTogether = true;
-                r.AddListPrice(t);
+                if (DropDownPriceList.SelectedItem.ToString() != null)
+                    r.AddListPrice(t, DropDownPriceList.SelectedItem.ToString(), priceList);
+                else
+                    MessageBox.Show("Veuillez sélectionner une liste de prix","Aucune liste de prix sélectionné", MessageBoxButton.OK);
             }
             else if(type == TableType.CatalogList)
             {
-                r.AddPriceCatalogTables(section);
+                r.AddPriceCatalogTables(section, priceList);
             }
         }
 
@@ -171,7 +175,8 @@ namespace ListeDePrixNovago
                     File.Copy(fileChooser.FileName, newPath, true);
 
                     ExcelReader re = new ExcelReader(newPath);
-                    DropDownPrice.ItemsSource = re.GetPriceColumns();
+                    DropDownPriceList.ItemsSource = re.GetListTypeList();
+                    ListBoxPrices.ItemsSource = re.GetPriceColumns();
                 }
             }
             catch(Exception ex)
@@ -246,6 +251,20 @@ namespace ListeDePrixNovago
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
+
+        private List<Price> GetCheckedItems()
+        {
+            List<Price> priceList = new List<Price>();
+            foreach(var item in ListBoxPrices.Items)
+            {
+                var i = item as Price;
+                if(i.IsChecked)
+                {
+                    priceList.Add(i);
+                }
+            }
+            return priceList;
         }
 
         private void SendEmailButton_Click(object sender, RoutedEventArgs e)

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ListeDePrixNovago"
         mc:Ignorable="d"
-        Title="Liste de Prix Coop Novago" Height="454.47" Width="725.614" MinHeight="430" MinWidth="670" Icon="coop.ico">
+        Title="Liste de Prix Coop Novago" Height="466.47" Width="780.014" MinHeight="430" MinWidth="670" Icon="coop.ico">
     <Grid>
         <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabItem Header="Liste de prix" Margin="0,0,-2,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -16,17 +16,22 @@
                     <TextBox x:Name="RecipientsEmail" TabIndex="2" AcceptsReturn="True" HorizontalAlignment="Left" Height="79" Margin="128,89,0,0" TextWrapping="Wrap" Text="Séparez les adresses courriels par des points-virgules." VerticalAlignment="Top" Width="349" GotFocus="RemoveText" LostFocus="AddText"/>
                     <Button x:Name="SendEmailButton" TabIndex="3" Content="Envoyer Liste De Prix" HorizontalAlignment="Left" Margin="128,259,0,0" VerticalAlignment="Top" Width="192" Click="SendEmailButton_Click"/>
                     <Button x:Name="SendCatalogButton" TabIndex="4" Content="Envoyer Catalogue De Prix" HorizontalAlignment="Left" Margin="128,284,0,0" VerticalAlignment="Top" Width="192" Click="SendCatalog_Click"/>
-                    <TextBlock Width="50" Height="25" Margin="73,284,589,86">           
+                    <TextBlock Margin="49,286,597.8,93">           
                         <Hyperlink x:Name="Gabarit" NavigateUri="http://www.google.com" Click="Gabarit_Click">
                             Gabarit
                         </Hyperlink>
                     </TextBlock>
                     <Label Content="Titre" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="30,58,0,0" VerticalAlignment="Top" Width="93"/>
                     <TextBox x:Name="TitleSet" TabIndex="1" HorizontalAlignment="Left" Height="26" Margin="128,58,0,0" TextWrapping="Wrap" Text="Liste de prix" VerticalAlignment="Top" Width="349"/>
-                    <ComboBox x:Name="DropDownPrice" HorizontalAlignment="Left" Margin="128,173,0,0" VerticalAlignment="Top" Width="349"/>
-                    <ComboBox x:Name="DropDownPriceList" Margin="128,200,235,173"/>
-                    <Label Content="Prix" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="30,173,0,0" VerticalAlignment="Top" Width="93"/>
-                    <Label Content="Liste de Prix" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="10,200,0,0" VerticalAlignment="Top" Width="113"/>
+                    <ComboBox x:Name="DropDownPriceList" HorizontalAlignment="Left" VerticalAlignment="Top" Width="349" Margin="128,173,0,0"/>
+                    <Label Content="Liste de Prix" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top" Width="113"/>
+                    <ListBox x:Name="ListBoxPrices" ItemsSource="{Binding}" HorizontalAlignment="Left" Height="165" Margin="482,30,0,0" VerticalAlignment="Top" Width="139" RenderTransformOrigin="0.5,0.5">
+                        <ListBox.ItemTemplate>
+                            <HierarchicalDataTemplate>
+                                <CheckBox Content="{Binding Name}" IsChecked="{Binding IsChecked}"/>
+                            </HierarchicalDataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </Grid>
             </TabItem>
             <TabItem Header="Paramètres">

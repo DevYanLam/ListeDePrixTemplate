@@ -66,7 +66,7 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>ListeDePrixNovago.App</StartupObject>
@@ -92,9 +92,6 @@
     </Reference>
     <Reference Include="PdfSharp.Charting, Version=1.50.4845.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <HintPath>..\packages\PDFsharp-MigraDoc.1.50.4845-RC2a\lib\net20\PdfSharp.Charting.dll</HintPath>
-    </Reference>
-    <Reference Include="sharpPDF-SL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpPDF.1.1.0\lib\sharpPDF-SL.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -143,6 +140,7 @@
     </Compile>
     <Compile Include="Utility\Column.cs" />
     <Compile Include="Utility\ListItem.cs" />
+    <Compile Include="Utility\Price.cs" />
     <Compile Include="Utility\SaveXml.cs" />
     <Compile Include="Utility\SendEmail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -175,7 +173,7 @@
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 et x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

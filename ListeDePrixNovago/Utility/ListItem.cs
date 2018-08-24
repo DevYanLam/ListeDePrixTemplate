@@ -8,12 +8,15 @@ namespace ListeDePrixNovago.Utility
 {
     class ListItem
     {
+        private string listType;
         private string id;
         private string description;
-        private double price;
+        private List<Price> price;
 
+        public string ListType { get => listType; set => listType = value; }
         public string Id { get => id; set => id = value; }
         public string Description { get => description; set => description = value; }
-        public double Price { get => price; set => price = value; }
+        public List<Price> Price { get => price; set => price = value; }
+        
     }
 }
