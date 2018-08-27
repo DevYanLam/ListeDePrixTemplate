@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,10 +13,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ListeDePrixNovago.PDFTemplate;
 using ListeDePrixNovago.Utility;
+using ListeDePrixNovago.Utility.TeamsAuthHelper;
+using Microsoft.Graph;
 using Microsoft.Win32;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Tables;
 using MigraDoc.Rendering;
+using Newtonsoft.Json.Linq;
 using PdfSharp.Pdf;
 
 namespace ListeDePrixNovago
@@ -27,6 +32,8 @@ namespace ListeDePrixNovago
 
         private PriceListConfig config;
         private string pdfFileName;
+        private GraphServiceClient graphClient = null;
+        private List<NovagoSite> teamsName;
        
         public MainWindow()
         {
@@ -74,9 +81,9 @@ namespace ListeDePrixNovago
                 
                 //Footers
                 DateTime input = DateTime.Today;
-                int deltaMonday = DayOfWeek.Monday - input.DayOfWeek;
+                int deltaMonday = System.DayOfWeek.Monday - input.DayOfWeek;
                 DateTime monday = input.AddDays(deltaMonday);
-                int deltaSunday = DayOfWeek.Sunday - input.DayOfWeek;
+                int deltaSunday = System.DayOfWeek.Sunday - input.DayOfWeek;
                 DateTime sunday = input.AddDays(deltaSunday);
                 string validText = "";
                 if (config.IsValidityDateInFooter)
@@ -149,7 +156,7 @@ namespace ListeDePrixNovago
                 if (fileChooser.ShowDialog() == true)
                 {
                     this.LogoPath.Text = fileChooser.FileName;
-                    File.Copy(fileChooser.FileName, Environment.CurrentDirectory + "/" + fileChooser.SafeFileName, true);
+                    System.IO.File.Copy(fileChooser.FileName, Environment.CurrentDirectory + "/" + fileChooser.SafeFileName, true);
                     ShowLogo();
                 }
             }
@@ -172,7 +179,7 @@ namespace ListeDePrixNovago
                 {
                     string newPath = Environment.CurrentDirectory + "/" + fileChooser.SafeFileName;
                     this.ExcelFilePath.Text = newPath;
-                    File.Copy(fileChooser.FileName, newPath, true);
+                    System.IO.File.Copy(fileChooser.FileName, newPath, true);
 
                     ExcelReader re = new ExcelReader(newPath);
                     DropDownPriceList.ItemsSource = re.GetListTypeList();
@@ -267,6 +274,27 @@ namespace ListeDePrixNovago
             return priceList;
         }
 
+        private async Task LogIn()
+        {
+            
+        }
+        private List<NovagoSite> GetGroups(string siteId, bool isFirstExecution)
+        {
+            var me = graphClient.Me.Request().GetAsync();
+            me.Wait();
+
+            var groups = graphClient.Users[me.Result.Id].GetMemberGroups();
+
+
+            Task<IGraphServiceGroupsCollectionPage> sites;
+            List<NovagoSite> tempSites = new List<NovagoSite>();
+            sites = graphClient.Groups.Request().GetAsync();
+            sites.Wait();
+            
+            return tempSites;
+        }
+        
+        
         private void SendEmailButton_Click(object sender, RoutedEventArgs e)
         {
             if(showPDF(TableType.PriceList))
@@ -296,6 +324,38 @@ namespace ListeDePrixNovago
         private void Gabarit_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void LogToTeams_Click(object sender, RoutedEventArgs e)
+        {
+            var graphAsync = AuthenticationHelper.GetAuthenticatedClientAsync();
+            graphAsync.Wait();
+            graphClient = graphAsync.Result;
+            teamsName = GetGroups(null, true);
+            DropDownTeams.ItemsSource = teamsName;
+        }
+
+        private void TeamSelected(object sender, RoutedEventArgs e)
+        {
+            ComboBox dropDown = sender as ComboBox;
+            Console.WriteLine(dropDown.SelectedValue);
+            var drives = graphClient.Groups[(string)dropDown.SelectedValue].Drives.Request().GetAsync();
+            drives.Wait();
+            List<NovagoSite> driveList = new List<NovagoSite>();
+            foreach(var d in drives.Result)
+            {
+                var items = graphClient.Drives[d.Id].Root.Children.Request().GetAsync();
+                items.Wait();
+                foreach (var i in items.Result)
+                {
+                    driveList.Add(new NovagoSite()
+                    {
+                        Id = i.Id,
+                        Name = i.Name
+                    });
+                }
+            }
+            DropDownChannel.ItemsSource = driveList;
         }
     }
 }

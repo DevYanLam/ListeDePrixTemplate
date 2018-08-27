@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ListeDePrixNovago"
         mc:Ignorable="d"
-        Title="Liste de Prix Coop Novago" Height="466.47" Width="780.014" MinHeight="430" MinWidth="670" Icon="coop.ico">
+        Title="Liste de Prix Coop Novago" Height="635.466" Width="697.985" MinHeight="430" MinWidth="670" Icon="coop.ico">
     <Grid>
         <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabItem Header="Liste de prix" Margin="0,0,-2,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -39,18 +39,24 @@
                     <Button x:Name="LogoButton" Content="Logo..." HorizontalAlignment="Left" Margin="20,16,0,0" VerticalAlignment="Top" Width="75" Height="24" Click="LogoButton_Click"/>
                     <TextBox x:Name="LogoPath" HorizontalAlignment="Left" Height="23" Margin="100,17,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="294"/>
                     <Image x:Name="LogoPreview" HorizontalAlignment="Left" Height="103" Margin="399,17,0,0" VerticalAlignment="Top" Width="257"/>
-                    <Label Content="Pied de Page" HorizontalAlignment="Left" Margin="20,45,0,0" VerticalAlignment="Top" Width="93"/>
-                    <TextBox x:Name="FooterSet" AcceptsReturn="True" TabIndex="1" HorizontalAlignment="Left" Height="252" Margin="20,76,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="374"/>
+                    <Label Content="Pied de Page" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="20,45,0,0" VerticalAlignment="Top" Width="374"/>
+                    <TextBox x:Name="FooterSet" AcceptsReturn="True" TabIndex="1" HorizontalAlignment="Left" Height="368" Margin="20,104,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="374"/>
                     <Label Content="Serveur SMTP" HorizontalAlignment="Left" Margin="399,125,0,0" VerticalAlignment="Top" Width="108"/>
                     <TextBox x:Name="SmtpServerSet" TabIndex="3" HorizontalAlignment="Left" Height="23" Margin="399,156,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180"/>
                     <Label Content="Nom d'usager" HorizontalAlignment="Left" Margin="399,184,0,0" VerticalAlignment="Top" Width="108"/>
                     <TextBox x:Name="SmtpUsernameSet" TabIndex="5" HorizontalAlignment="Left" Height="23" Margin="399,215,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="247"/>
                     <Label Content="Mot de passe" HorizontalAlignment="Left" Margin="399,243,0,0" VerticalAlignment="Top" Width="108"/>
                     <PasswordBox x:Name="SmtpPasswordSet" TabIndex="6" HorizontalAlignment="Left" Margin="399,274,0,0" VerticalAlignment="Top" Width="247" Height="23"/>
-                    <CheckBox x:Name="IsValidityFooter" TabIndex="2" Content="Ajouter la période de validité (Du lundi au vendredi)" HorizontalAlignment="Left" Margin="24,333,0,0" VerticalAlignment="Top" Width="370" Height="23"/>
-                    <Button x:Name="ApplySettings" TabIndex="7" Content="Appliquer" HorizontalAlignment="Left" Margin="399,308,0,0" VerticalAlignment="Top" Width="75" Height="23" Click="ApplySettings_Click"/>
+                    <CheckBox x:Name="IsValidityFooter" TabIndex="2" Content="Ajouter la période de validité (Du lundi au vendredi)" HorizontalAlignment="Left" Margin="20,76,0,0" VerticalAlignment="Top" Width="370" Height="23"/>
+                    <Button x:Name="ApplySettings" TabIndex="7" Content="Appliquer" HorizontalAlignment="Left" Margin="593,538,0,0" VerticalAlignment="Top" Width="75" Height="23" Click="ApplySettings_Click"/>
                     <Label Content="Port" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="603,125,0,0" VerticalAlignment="Top" Width="43"/>
                     <TextBox x:Name="SmtpServerPort" TabIndex="4" HorizontalAlignment="Left" Height="23" Margin="603,156,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="37"/>
+                    <ComboBox x:Name="DropDownTeams" HorizontalAlignment="Left" Margin="400,392,0,0" VerticalAlignment="Top" Width="257" ItemsSource="{Binding NovagoSite}" SelectedValue="{Binding Id, Mode=TwoWay}" SelectedValuePath="Id" DisplayMemberPath="Name" SelectionChanged="TeamSelected"/>
+                    <Label Content="Équipe Teams" HorizontalAlignment="Left" Margin="400,361,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.465,-0.165" Width="257"/>
+                    <Label Content="Canal" HorizontalAlignment="Left" Margin="400,419,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.465,-0.165" Width="257"/>
+                    <ComboBox x:Name="DropDownChannel" HorizontalAlignment="Left" Margin="400,450,0,0" VerticalAlignment="Top" Width="257" ItemsSource="{Binding NovagoSite}" SelectedValue="{Binding Id, Mode=TwoWay}" SelectedValuePath="Id" DisplayMemberPath="Name"/>
+                    <Label Content="Microsoft Teams" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="399,302,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.465,-0.165" Width="258"/>
+                    <Button x:Name="LoginTeams" TabIndex="7" Content="Se Connecter" HorizontalAlignment="Left" Margin="400,333,0,0" VerticalAlignment="Top" Width="257" Height="23" Click="LogToTeams_Click" RenderTransformOrigin="0.486,0.172"/>
                 </Grid>
             </TabItem>
 
