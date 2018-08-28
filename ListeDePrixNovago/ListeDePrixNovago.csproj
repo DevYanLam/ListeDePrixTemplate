@@ -236,6 +236,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ExcelTemplates\listedeprix_producteur.xls" />
+    <None Include="ExcelTemplates\listedeprix_representant_animal.xls" />
     <None Include="ListeDePrixNovago_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

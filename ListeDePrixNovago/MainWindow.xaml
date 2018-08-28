@@ -16,8 +16,8 @@
                     <TextBox x:Name="RecipientsEmail" TabIndex="2" AcceptsReturn="True" HorizontalAlignment="Left" Height="79" Margin="128,89,0,0" TextWrapping="Wrap" Text="Séparez les adresses courriels par des points-virgules." VerticalAlignment="Top" Width="349" GotFocus="RemoveText" LostFocus="AddText"/>
                     <Button x:Name="SendEmailButton" TabIndex="3" Content="Envoyer Liste De Prix" HorizontalAlignment="Left" Margin="128,259,0,0" VerticalAlignment="Top" Width="192" Click="SendEmailButton_Click"/>
                     <Button x:Name="SendCatalogButton" TabIndex="4" Content="Envoyer Catalogue De Prix" HorizontalAlignment="Left" Margin="128,284,0,0" VerticalAlignment="Top" Width="192" Click="SendCatalog_Click"/>
-                    <TextBlock Margin="70,284,561,275" >           
-                        <Hyperlink x:Name="Gabarit" NavigateUri="http://www.google.com" Click="Gabarit_Click">
+                    <TextBlock Margin="72,284,577,286" >           
+                        <Hyperlink x:Name="GabaritCatalog" x:Uid="catalogprix" NavigateUri="http://www.google.com" Click="GabaritCatalog_Click">
                             Gabarit
                         </Hyperlink>
                     </TextBlock>
@@ -32,6 +32,7 @@
                             </HierarchicalDataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+                    <TextBlock Margin="72,259,577,311" ><Hyperlink x:Name="GabaritListeDePrix" x:Uid="listeprix" NavigateUri="http://www.google.com" Click="GabaritListe_Click"><Run Text="Gabarit"/></Hyperlink></TextBlock>
                 </Grid>
             </TabItem>
             <TabItem Header="Paramètres">

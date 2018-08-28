@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using ListeDePrixNovago.PDFTemplate;
 using ListeDePrixNovago.Utility;
 using ListeDePrixNovago.Utility.TeamsAuthHelper;
@@ -19,7 +14,6 @@ using Microsoft.Win32;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Tables;
 using MigraDoc.Rendering;
-using Newtonsoft.Json.Linq;
 using PdfSharp.Pdf;
 
 namespace ListeDePrixNovago
@@ -173,7 +167,7 @@ namespace ListeDePrixNovago
             {
                 OpenFileDialog fileChooser = new OpenFileDialog();
                 fileChooser.Filter = "Excel File (*.xls)|*.xls|Excel File (*.xlsx)|*.xlsx";
-                fileChooser.Title = "Sélectionnez un logo";
+                fileChooser.Title = "Open";
 
                 if (fileChooser.ShowDialog() == true)
                 {
@@ -319,11 +313,7 @@ namespace ListeDePrixNovago
             }
             return priceList;
         }
-
-        private async Task LogIn()
-        {
-            
-        }
+        
         private List<NovagoSite> GetGroups(string siteId, bool isFirstExecution)
         {
             List<NovagoSite> tempSites = new List<NovagoSite>();
@@ -397,7 +387,20 @@ namespace ListeDePrixNovago
                 tb.Text = "Séparez les adresses courriels par des points-virgules.";
         }
 
-        private void Gabarit_Click(object sender, RoutedEventArgs e)
+        private void GabaritCatalog_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog savefile = new SaveFileDialog();
+            savefile.FileName = "listedeprix_representant_animal.xls";
+            savefile.Filter = "Excel file (*.xls)|*.xls|Excel file (*.xlsx)|*.xlsx";
+
+            if ((bool)savefile.ShowDialog())
+            {
+                using (StreamWriter sw = new StreamWriter(savefile.FileName))
+                    Process.Start(savefile.FileName);
+            }
+        }
+
+        private void GabaritListe_Click(object sender, RoutedEventArgs e)
         {
 
         }
@@ -437,7 +440,6 @@ namespace ListeDePrixNovago
                 MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK);
             }
         }
-
-       
+        
     }
 }
