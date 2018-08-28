@@ -23,6 +23,8 @@ namespace ListeDePrixNovago.PDFTemplate
         private int smtpPort;
         private string smtpUsername;
         private string smtpPassword;
+        private string teamsGroupId;
+        private string driveItemId;
 
         public string LogoPath { get => logoPath; set => logoPath = value; }
         public string Title { get => title; set => title = value; }
@@ -32,5 +34,7 @@ namespace ListeDePrixNovago.PDFTemplate
         public string SmtpUsername { get => smtpUsername; set => smtpUsername = value; }
         public string SmtpPassword { get => smtpPassword; set => smtpPassword = value; }
         public int SmtpPort { get => smtpPort; set => smtpPort = value; }
+        public string TeamsGroupId { get => teamsGroupId; set => teamsGroupId = value; }
+        public string DriveItemId { get => driveItemId; set => driveItemId = value; }
     }
 }

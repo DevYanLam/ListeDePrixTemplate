@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ListeDePrixNovago"
         mc:Ignorable="d"
-        Title="Liste de Prix Coop Novago" Height="635.466" Width="697.985" MinHeight="430" MinWidth="670" Icon="coop.ico">
+        Title="Liste de Prix Coop Novago" Height="649.466" Width="713.985" MinHeight="430" MinWidth="670" Icon="coop.ico">
     <Grid>
         <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabItem Header="Liste de prix" Margin="0,0,-2,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -16,7 +16,7 @@
                     <TextBox x:Name="RecipientsEmail" TabIndex="2" AcceptsReturn="True" HorizontalAlignment="Left" Height="79" Margin="128,89,0,0" TextWrapping="Wrap" Text="Séparez les adresses courriels par des points-virgules." VerticalAlignment="Top" Width="349" GotFocus="RemoveText" LostFocus="AddText"/>
                     <Button x:Name="SendEmailButton" TabIndex="3" Content="Envoyer Liste De Prix" HorizontalAlignment="Left" Margin="128,259,0,0" VerticalAlignment="Top" Width="192" Click="SendEmailButton_Click"/>
                     <Button x:Name="SendCatalogButton" TabIndex="4" Content="Envoyer Catalogue De Prix" HorizontalAlignment="Left" Margin="128,284,0,0" VerticalAlignment="Top" Width="192" Click="SendCatalog_Click"/>
-                    <TextBlock Margin="49,286,597.8,93">           
+                    <TextBlock Margin="70,284,561,275" >           
                         <Hyperlink x:Name="Gabarit" NavigateUri="http://www.google.com" Click="Gabarit_Click">
                             Gabarit
                         </Hyperlink>
@@ -51,12 +51,12 @@
                     <Button x:Name="ApplySettings" TabIndex="7" Content="Appliquer" HorizontalAlignment="Left" Margin="593,538,0,0" VerticalAlignment="Top" Width="75" Height="23" Click="ApplySettings_Click"/>
                     <Label Content="Port" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="603,125,0,0" VerticalAlignment="Top" Width="43"/>
                     <TextBox x:Name="SmtpServerPort" TabIndex="4" HorizontalAlignment="Left" Height="23" Margin="603,156,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="37"/>
-                    <ComboBox x:Name="DropDownTeams" HorizontalAlignment="Left" Margin="400,392,0,0" VerticalAlignment="Top" Width="257" ItemsSource="{Binding NovagoSite}" SelectedValue="{Binding Id, Mode=TwoWay}" SelectedValuePath="Id" DisplayMemberPath="Name" SelectionChanged="TeamSelected"/>
-                    <Label Content="Équipe Teams" HorizontalAlignment="Left" Margin="400,361,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.465,-0.165" Width="257"/>
-                    <Label Content="Canal" HorizontalAlignment="Left" Margin="400,419,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.465,-0.165" Width="257"/>
-                    <ComboBox x:Name="DropDownChannel" HorizontalAlignment="Left" Margin="400,450,0,0" VerticalAlignment="Top" Width="257" ItemsSource="{Binding NovagoSite}" SelectedValue="{Binding Id, Mode=TwoWay}" SelectedValuePath="Id" DisplayMemberPath="Name"/>
+                    <ComboBox x:Name="DropDownTeams" HorizontalAlignment="Left" Margin="400,392,0,0" VerticalAlignment="Top" Width="257" ItemsSource="{Binding NovagoSite}" SelectedValue="{Binding Id, Mode=TwoWay}" SelectedValuePath="Id" DisplayMemberPath="Name" SelectionChanged="TeamSelected" Visibility="Hidden"/>
+                    <Label x:Name="EquipeLabel" Content="Équipe Teams" HorizontalAlignment="Left" Margin="400,361,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.465,-0.165" Width="257" Visibility="Hidden"/>
+                    <Label x:Name="CanalLabel" Content="Canal" HorizontalAlignment="Left" Margin="400,419,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.465,-0.165" Width="257" Visibility="Hidden"/>
+                    <ComboBox x:Name="DropDownChannel" HorizontalAlignment="Left" Margin="400,450,0,0" VerticalAlignment="Top" Width="257" ItemsSource="{Binding NovagoSite}" SelectedValue="{Binding Id, Mode=TwoWay}" SelectedValuePath="Id" DisplayMemberPath="Name" Visibility="Hidden"/>
                     <Label Content="Microsoft Teams" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="399,302,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.465,-0.165" Width="258"/>
-                    <Button x:Name="LoginTeams" TabIndex="7" Content="Se Connecter" HorizontalAlignment="Left" Margin="400,333,0,0" VerticalAlignment="Top" Width="257" Height="23" Click="LogToTeams_Click" RenderTransformOrigin="0.486,0.172"/>
+                    <Button x:Name="LoginTeams" TabIndex="7" Content="Équipe Teams" HorizontalAlignment="Left" Margin="400,333,0,0" VerticalAlignment="Top" Width="257" Height="23" Click="LogToTeams_Click" RenderTransformOrigin="0.486,0.172"/>
                 </Grid>
             </TabItem>
 

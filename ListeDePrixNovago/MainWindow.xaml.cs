@@ -209,6 +209,15 @@ namespace ListeDePrixNovago
                 config.SmtpPort = Int32.Parse(SmtpServerPort.Text);
                 config.SmtpUsername = SmtpUsernameSet.Text;
                 config.SmtpPassword = SmtpPasswordSet.Password;
+                if(DropDownChannel.SelectedValue != null && DropDownTeams.SelectedValue != null)
+                {
+                    config.TeamsGroupId = DropDownTeams.SelectedValue as string;
+                    config.DriveItemId = DropDownChannel.SelectedValue as string;
+                    EquipeLabel.Visibility = Visibility.Hidden;
+                    DropDownTeams.Visibility = Visibility.Hidden;
+                    CanalLabel.Visibility = Visibility.Hidden;
+                    DropDownChannel.Visibility = Visibility.Hidden;
+                }
 
                 if (MessageBox.Show("Voulez-vous enregistrer la configuration?", "Enregistrement des paramètres", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                     SaveXml.SaveData(config, Environment.CurrentDirectory + "/config.xml");
@@ -260,6 +269,43 @@ namespace ListeDePrixNovago
             }
         }
 
+        private void SendToTeams()
+        {
+            if (MessageBox.Show("Voulez-vous importer le document vers Microsoft Teams", "Importation Microsoft Teams", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            {
+                try
+                {
+                    if (graphClient == null)
+                    {
+                        var graphAsync = AuthenticationHelper.GetAuthenticatedClientAsync();
+                        graphAsync.Wait();
+                        graphClient = graphAsync.Result;
+                    }
+                    string teamGroupId = config.TeamsGroupId;
+                    string driveItemId = config.DriveItemId;
+                    if (teamGroupId != null && driveItemId != null)
+                    {
+                        using (var stream = System.IO.File.Open(pdfFileName, FileMode.Open))
+                        {
+
+                            var folder = graphClient.Groups[teamGroupId].Drive.Items[driveItemId].ItemWithPath(TitleSet.Text + ".pdf").Content.Request().PutAsync<DriveItem>(stream);
+                            folder.Wait();
+                            
+                            MessageBox.Show("Le fichier a bien téléchargé", "Téléchargement réussi", MessageBoxButton.OK);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Aucune équipe teams n'a été séléctionné dans les paramètres");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK);
+                }
+            }
+        }
+
         private List<Price> GetCheckedItems()
         {
             List<Price> priceList = new List<Price>();
@@ -280,31 +326,61 @@ namespace ListeDePrixNovago
         }
         private List<NovagoSite> GetGroups(string siteId, bool isFirstExecution)
         {
-            var me = graphClient.Me.Request().GetAsync();
-            me.Wait();
-
-            var groups = graphClient.Users[me.Result.Id].GetMemberGroups();
-
-
-            Task<IGraphServiceGroupsCollectionPage> sites;
             List<NovagoSite> tempSites = new List<NovagoSite>();
-            sites = graphClient.Groups.Request().GetAsync();
+            var sites = graphClient.Groups.Request().GetAsync();
             sites.Wait();
+
+            foreach(var site in sites.Result)
+            {
+                tempSites.Add(new NovagoSite()
+                {
+                    Id = site.Id,
+                    Name = site.DisplayName
+                });
+            }
             
             return tempSites;
         }
-        
-        
+
+        private List<NovagoSite> GetChannels(ComboBox dropDown)
+        {
+            var drives = graphClient.Groups[(string)dropDown.SelectedValue].Drives.Request().GetAsync();
+            drives.Wait();
+            List<NovagoSite> driveList = new List<NovagoSite>();
+            foreach (var d in drives.Result)
+            {
+                var items = graphClient.Drives[d.Id].Root.Children.Request().GetAsync();
+                items.Wait();
+                foreach (var i in items.Result)
+                {
+                    driveList.Add(new NovagoSite()
+                    {
+                        Id = i.Id,
+                        Name = i.Name
+                    });
+                }
+            }
+
+            return driveList;
+        }
+
+
         private void SendEmailButton_Click(object sender, RoutedEventArgs e)
         {
-            if(showPDF(TableType.PriceList))
+            if (showPDF(TableType.PriceList))
+            {
                 SendEmail();
+                SendToTeams();
+            }
         }
 
         private void SendCatalog_Click(object sender, RoutedEventArgs e)
         {
-            if(showPDF(TableType.CatalogList))
+            if (showPDF(TableType.CatalogList))
+            {
                 SendEmail();
+                SendToTeams();
+            }
         }
 
         public void RemoveText(object sender, EventArgs e)
@@ -328,34 +404,40 @@ namespace ListeDePrixNovago
 
         private void LogToTeams_Click(object sender, RoutedEventArgs e)
         {
-            var graphAsync = AuthenticationHelper.GetAuthenticatedClientAsync();
-            graphAsync.Wait();
-            graphClient = graphAsync.Result;
-            teamsName = GetGroups(null, true);
-            DropDownTeams.ItemsSource = teamsName;
+            try
+            {
+                var graphAsync = AuthenticationHelper.GetAuthenticatedClientAsync();
+                graphAsync.Wait();
+                graphClient = graphAsync.Result;
+                teamsName = GetGroups(null, true);
+                DropDownTeams.ItemsSource = teamsName;
+
+                EquipeLabel.Visibility = Visibility.Visible;
+                DropDownTeams.Visibility = Visibility.Visible;
+                CanalLabel.Visibility = Visibility.Visible;
+                DropDownChannel.Visibility = Visibility.Visible;
+            }
+            catch(Exception)
+            {
+                MessageBox.Show("Impossible de se connecter", "Problème de connection", MessageBoxButton.OK);
+            }
         }
 
         private void TeamSelected(object sender, RoutedEventArgs e)
         {
-            ComboBox dropDown = sender as ComboBox;
-            Console.WriteLine(dropDown.SelectedValue);
-            var drives = graphClient.Groups[(string)dropDown.SelectedValue].Drives.Request().GetAsync();
-            drives.Wait();
-            List<NovagoSite> driveList = new List<NovagoSite>();
-            foreach(var d in drives.Result)
+            try
             {
-                var items = graphClient.Drives[d.Id].Root.Children.Request().GetAsync();
-                items.Wait();
-                foreach (var i in items.Result)
-                {
-                    driveList.Add(new NovagoSite()
-                    {
-                        Id = i.Id,
-                        Name = i.Name
-                    });
-                }
+                ComboBox dropDown = sender as ComboBox;
+                Console.WriteLine(dropDown.SelectedValue);
+                List<NovagoSite> driveList = GetChannels(dropDown);
+                DropDownChannel.ItemsSource = driveList;
             }
-            DropDownChannel.ItemsSource = driveList;
+            catch(AggregateException ex)
+            {
+                MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK);
+            }
         }
+
+       
     }
 }

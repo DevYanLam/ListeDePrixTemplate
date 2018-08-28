@@ -54,7 +54,7 @@ namespace ListeDePrixNovago.Utility.TeamsAuthHelper
         /// <summary>
         /// Path to the token cache
         /// </summary>
-        public static readonly string CacheFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location + ".msalcache.bin";
+        public static readonly string CacheFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location + ".cache.bin";
 
         private static readonly object FileLock = new object();
 
