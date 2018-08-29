@@ -18,6 +18,7 @@ namespace ListeDePrixNovago
         static App()
         {
             _clientApp = new PublicClientApplication(ClientId, "https://login.microsoftonline.com/common/", TokenCacheHelper.GetUserCache());
+            //_clientApp = new PublicClientApplication(ClientId);
         }
         //Below is the clientId of your app registration. 
         //You have to replace the below with the Application Id for your app registration

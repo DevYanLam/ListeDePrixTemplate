@@ -31,8 +31,15 @@ namespace ListeDePrixNovago
        
         public MainWindow()
         {
-            InitializeComponent();
-            ShowConfig();
+            try
+            {
+                InitializeComponent();
+                ShowConfig();
+            }
+            catch(Exception)
+            {
+                MessageBox.Show("Un problème est survenu");
+            }
         }
 
         private bool showPDF(TableType type)
@@ -87,7 +94,7 @@ namespace ListeDePrixNovago
                 template.AddParagraph();
                 template.AddParagraph(contactText);
 
-                PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(false, PdfFontEmbedding.Always);
+                PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(false);
                 pdfRenderer.Document = doc;
                 pdfRenderer.RenderDocument();
                 pdfFileName = Environment.CurrentDirectory + "\\" + TitleSet.Text + ".pdf";
@@ -241,7 +248,7 @@ namespace ListeDePrixNovago
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Impossible de lire le fichier de configuration. Il est peut-être vide.");
+                MessageBox.Show("Impossible de lire le fichier de configuration. Il est peut-être vide." + ex.Message);
             }
             
         }
@@ -389,20 +396,12 @@ namespace ListeDePrixNovago
 
         private void GabaritCatalog_Click(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog savefile = new SaveFileDialog();
-            savefile.FileName = "listedeprix_representant_animal.xls";
-            savefile.Filter = "Excel file (*.xls)|*.xls|Excel file (*.xlsx)|*.xlsx";
-
-            if ((bool)savefile.ShowDialog())
-            {
-                using (StreamWriter sw = new StreamWriter(savefile.FileName))
-                    Process.Start(savefile.FileName);
-            }
+            Process.Start(Environment.CurrentDirectory + "/Template/listedeprix_representant_animal.xls");
         }
 
         private void GabaritListe_Click(object sender, RoutedEventArgs e)
         {
-
+            Process.Start(Environment.CurrentDirectory + "/Template/listedeprix_producteur.xls");
         }
 
         private void LogToTeams_Click(object sender, RoutedEventArgs e)
@@ -420,9 +419,13 @@ namespace ListeDePrixNovago
                 CanalLabel.Visibility = Visibility.Visible;
                 DropDownChannel.Visibility = Visibility.Visible;
             }
-            catch(Exception)
+            catch(AggregateException ex)
             {
-                MessageBox.Show("Impossible de se connecter", "Problème de connection", MessageBoxButton.OK);
+                MessageBox.Show("Agregate Exception Impossible de se connecter\n" + ex.Message + "\n" + ex.StackTrace, "Problème de connection");
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Impossible de se connecter\n" + ex.Message + "\n" + ex.StackTrace, "Problème de connection");
             }
         }
 

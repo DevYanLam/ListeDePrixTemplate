@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ListeDePrixNovago"
         mc:Ignorable="d"
-        Title="Liste de Prix Coop Novago" Height="649.466" Width="713.985" MinHeight="430" MinWidth="670" Icon="coop.ico">
+        Title="Liste de Prix Coop Novago" Height="664.466" Width="768.985" MinHeight="430" MinWidth="670" Icon="coop.ico">
     <Grid>
         <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabItem Header="Liste de prix" Margin="0,0,-2,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -36,7 +36,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Paramètres">
-                <Grid Background="#FFE5E5E5" Margin="0,0,6,5">
+                <Grid Background="#FFE5E5E5" Margin="0,0,2,2">
                     <Button x:Name="LogoButton" Content="Logo..." HorizontalAlignment="Left" Margin="20,16,0,0" VerticalAlignment="Top" Width="75" Height="24" Click="LogoButton_Click"/>
                     <TextBox x:Name="LogoPath" HorizontalAlignment="Left" Height="23" Margin="100,17,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="294"/>
                     <Image x:Name="LogoPreview" HorizontalAlignment="Left" Height="103" Margin="399,17,0,0" VerticalAlignment="Top" Width="257"/>

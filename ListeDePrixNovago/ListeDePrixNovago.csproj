@@ -30,7 +30,7 @@
     <PublisherName>Coop Novago</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>listedeprix.htm</WebPage>
-    <ApplicationRevision>6</ApplicationRevision>
+    <ApplicationRevision>7</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -187,6 +187,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ListeDePrixException.cs" />
     <Compile Include="Utility\NovagoSite.cs" />
     <Compile Include="Utility\TeamsAuthHelper\AuthenticationHelper.cs" />
     <Compile Include="Utility\TeamsAuthHelper\TokenCacheHelper.cs" />

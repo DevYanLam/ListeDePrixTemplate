@@ -24,8 +24,6 @@ namespace ListeDePrixNovago.Utility.TeamsAuthHelper
         public static string TokenForUser = null;
         public static DateTimeOffset Expiration;
 
-        private static GraphServiceClient graphClient = null;
-
         // Get an access token for the given context and resourceId. An attempt is first made to 
         // acquire the token silently. If that fails, then we try to acquire the token by prompting the user.
         public static async Task<GraphServiceClient> GetAuthenticatedClientAsync()
@@ -57,8 +55,7 @@ namespace ListeDePrixNovago.Utility.TeamsAuthHelper
             {
                 if (TokenForUser == null || Expiration <= DateTimeOffset.UtcNow.AddMinutes(5))
                 {
-                    authResult = await myApp.AcquireTokenAsync(Scopes).ConfigureAwait(false);
-
+                    authResult = await myApp.AcquireTokenAsync(Scopes);
                     TokenForUser = authResult.AccessToken;
                     Expiration = authResult.ExpiresOn;
                 }
