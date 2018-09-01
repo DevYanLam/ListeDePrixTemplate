@@ -55,9 +55,12 @@ namespace ListeDePrixNovago.Utility.TeamsAuthHelper
             {
                 if (TokenForUser == null || Expiration <= DateTimeOffset.UtcNow.AddMinutes(5))
                 {
-                    authResult = await myApp.AcquireTokenAsync(Scopes);
+                    var a = myApp.AcquireTokenAsync(Scopes);
+                    a.Wait();
+                    authResult = a.Result;
                     TokenForUser = authResult.AccessToken;
                     Expiration = authResult.ExpiresOn;
+
                 }
             }
 

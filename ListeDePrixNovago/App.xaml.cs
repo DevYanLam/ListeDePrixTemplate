@@ -22,7 +22,7 @@ namespace ListeDePrixNovago
         }
         //Below is the clientId of your app registration. 
         //You have to replace the below with the Application Id for your app registration
-        private static string ClientId = "8db0a1f7-f0b6-4593-ba68-01499f1f0762";
+        private static string ClientId = "CLIENT_ID";
 
         private static PublicClientApplication _clientApp;
 

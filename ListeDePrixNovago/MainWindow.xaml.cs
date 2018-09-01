@@ -144,8 +144,6 @@ namespace ListeDePrixNovago
             }
         }
 
-       
-
         private void LogoButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -214,6 +212,8 @@ namespace ListeDePrixNovago
                 {
                     config.TeamsGroupId = DropDownTeams.SelectedValue as string;
                     config.DriveItemId = DropDownChannel.SelectedValue as string;
+                    config.TeamsGroupName = ((NovagoSite)DropDownTeams.SelectedItem).Name;
+                    config.DriveItemName = ((NovagoSite)DropDownChannel.SelectedItem).Name;
                     EquipeLabel.Visibility = Visibility.Hidden;
                     DropDownTeams.Visibility = Visibility.Hidden;
                     CanalLabel.Visibility = Visibility.Hidden;
@@ -233,6 +233,8 @@ namespace ListeDePrixNovago
 
         private void ShowConfig()
         {
+            TeamsLabel.Visibility = Visibility.Visible;
+            ChannelLabel.Visibility = Visibility.Visible;
             try
             {
                 PriceListConfig config = SaveXml.GetData(Environment.CurrentDirectory + "/config.xml");
@@ -244,6 +246,8 @@ namespace ListeDePrixNovago
                 SmtpUsernameSet.Text = config.SmtpUsername;
                 SmtpPasswordSet.Password = config.SmtpPassword;
                 SmtpServerPort.Text = config.SmtpPort.ToString();
+                TeamsLabel.Content = config.TeamsGroupName;
+                ChannelLabel.Content = config.DriveItemName;
                 ShowLogo();
             }
             catch(Exception ex)
@@ -255,7 +259,7 @@ namespace ListeDePrixNovago
 
         private void SendEmail()
         {
-            if (MessageBox.Show("Voulez-vous envoyer ce document à " + RecipientsEmail.Text + "?", "Confirmation d'envoie", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            if (MessageBox.Show("Voulez-vous envoyer ce document à " + RecipientsEmail.Text + "?", "Confirmation d'envoie", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 try
                 {
@@ -272,7 +276,7 @@ namespace ListeDePrixNovago
 
         private void SendToTeams()
         {
-            if (MessageBox.Show("Voulez-vous importer le document vers Microsoft Teams", "Importation Microsoft Teams", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            if (MessageBox.Show("Voulez-vous importer le document vers Microsoft Teams", "Importation Microsoft Teams", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 try
                 {
@@ -329,11 +333,14 @@ namespace ListeDePrixNovago
 
             foreach(var site in sites.Result)
             {
-                tempSites.Add(new NovagoSite()
+                if (site.DeletedDateTime > DateTimeOffset.Now || site.DeletedDateTime is null)
                 {
-                    Id = site.Id,
-                    Name = site.DisplayName
-                });
+                    tempSites.Add(new NovagoSite()
+                    {
+                        Id = site.Id,
+                        Name = site.DisplayName
+                    });
+                }
             }
             
             return tempSites;
@@ -341,14 +348,14 @@ namespace ListeDePrixNovago
 
         private List<NovagoSite> GetChannels(ComboBox dropDown)
         {
-            var drives = graphClient.Groups[(string)dropDown.SelectedValue].Drives.Request().GetAsync();
+            var drives = graphClient.Groups[(string)dropDown.SelectedValue].Drive.Request().GetAsync();
             drives.Wait();
             List<NovagoSite> driveList = new List<NovagoSite>();
-            foreach (var d in drives.Result)
+            var items = graphClient.Drives[drives.Result.Id].Root.Children.Request().GetAsync();
+            items.Wait();
+            foreach (var i in items.Result)
             {
-                var items = graphClient.Drives[d.Id].Root.Children.Request().GetAsync();
-                items.Wait();
-                foreach (var i in items.Result)
+                if (i.Folder != null)
                 {
                     driveList.Add(new NovagoSite()
                     {
@@ -357,10 +364,10 @@ namespace ListeDePrixNovago
                     });
                 }
             }
+            
 
             return driveList;
         }
-
 
         private void SendEmailButton_Click(object sender, RoutedEventArgs e)
         {
@@ -412,20 +419,22 @@ namespace ListeDePrixNovago
                 graphAsync.Wait();
                 graphClient = graphAsync.Result;
                 teamsName = GetGroups(null, true);
+                teamsName.Sort((x,y) => String.Compare(x.Name,y.Name));
+                DropDownTeams.ItemsSource = null;
+                DropDownChannel.ItemsSource = null;
                 DropDownTeams.ItemsSource = teamsName;
+
+                TeamsLabel.Visibility = Visibility.Hidden;
+                ChannelLabel.Visibility = Visibility.Hidden;
 
                 EquipeLabel.Visibility = Visibility.Visible;
                 DropDownTeams.Visibility = Visibility.Visible;
                 CanalLabel.Visibility = Visibility.Visible;
                 DropDownChannel.Visibility = Visibility.Visible;
             }
-            catch(AggregateException ex)
-            {
-                MessageBox.Show("Agregate Exception Impossible de se connecter\n" + ex.Message + "\n" + ex.StackTrace, "Problème de connection");
-            }
             catch(Exception ex)
             {
-                MessageBox.Show("Impossible de se connecter\n" + ex.Message + "\n" + ex.StackTrace, "Problème de connection");
+                MessageBox.Show(ex.ToString());
             }
         }
 
@@ -435,8 +444,7 @@ namespace ListeDePrixNovago
             {
                 ComboBox dropDown = sender as ComboBox;
                 Console.WriteLine(dropDown.SelectedValue);
-                List<NovagoSite> driveList = GetChannels(dropDown);
-                DropDownChannel.ItemsSource = driveList;
+                DropDownChannel.ItemsSource = GetChannels(dropDown);
             }
             catch(AggregateException ex)
             {

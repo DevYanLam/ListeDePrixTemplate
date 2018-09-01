@@ -58,6 +58,8 @@
                     <ComboBox x:Name="DropDownChannel" HorizontalAlignment="Left" Margin="400,450,0,0" VerticalAlignment="Top" Width="257" ItemsSource="{Binding NovagoSite}" SelectedValue="{Binding Id, Mode=TwoWay}" SelectedValuePath="Id" DisplayMemberPath="Name" Visibility="Hidden"/>
                     <Label Content="Microsoft Teams" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="399,302,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.465,-0.165" Width="258"/>
                     <Button x:Name="LoginTeams" TabIndex="7" Content="Équipe Teams" HorizontalAlignment="Left" Margin="400,333,0,0" VerticalAlignment="Top" Width="257" Height="23" Click="LogToTeams_Click" RenderTransformOrigin="0.486,0.172"/>
+                    <Label x:Name="TeamsLabel" Content="" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="401,361,0,0" VerticalAlignment="Top" Width="256"/>
+                    <Label x:Name="ChannelLabel" Content="" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="401,392,0,0" VerticalAlignment="Top" Width="256"/>
                 </Grid>
             </TabItem>
 
