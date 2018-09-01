@@ -128,13 +128,13 @@ namespace ListeDePrixNovago
             }
         }
 
-        private void ShowLogo()
+        private void ShowLogo(string path)
         {
             try
             {
                 BitmapImage b = new BitmapImage();
                 b.BeginInit();
-                b.UriSource = new Uri(this.LogoPath.Text);
+                b.UriSource = new Uri(path);
                 b.EndInit();
                 this.LogoPreview.Source = b;
             }
@@ -154,9 +154,9 @@ namespace ListeDePrixNovago
 
                 if (fileChooser.ShowDialog() == true)
                 {
-                    this.LogoPath.Text = fileChooser.FileName;
                     System.IO.File.Copy(fileChooser.FileName, Environment.CurrentDirectory + "/" + fileChooser.SafeFileName, true);
-                    ShowLogo();
+                    this.LogoPath.Text = Environment.CurrentDirectory + "/" + fileChooser.SafeFileName;
+                    ShowConfig();
                 }
             }
             catch(Exception ex)
@@ -239,7 +239,7 @@ namespace ListeDePrixNovago
             {
                 PriceListConfig config = SaveXml.GetData(Environment.CurrentDirectory + "/config.xml");
                 this.config = config;
-                LogoPath.Text = config.LogoPath;
+                LogoPath.Text = config.LogoPath.Split('/')[config.LogoPath.Split('/').Length-1];
                 FooterSet.Text = config.Footer;
                 IsValidityFooter.IsChecked = config.IsValidityDateInFooter;
                 SmtpServerSet.Text = config.SmtpServer;
@@ -248,7 +248,7 @@ namespace ListeDePrixNovago
                 SmtpServerPort.Text = config.SmtpPort.ToString();
                 TeamsLabel.Content = config.TeamsGroupName;
                 ChannelLabel.Content = config.DriveItemName;
-                ShowLogo();
+                ShowLogo(config.LogoPath);
             }
             catch(Exception ex)
             {
