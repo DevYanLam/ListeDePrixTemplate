@@ -28,6 +28,7 @@ namespace ListeDePrixNovago
         private string pdfFileName;
         private GraphServiceClient graphClient = null;
         private List<NovagoSite> teamsName;
+        private string logoPath;
        
         public MainWindow()
         {
@@ -155,8 +156,9 @@ namespace ListeDePrixNovago
                 if (fileChooser.ShowDialog() == true)
                 {
                     System.IO.File.Copy(fileChooser.FileName, Environment.CurrentDirectory + "/" + fileChooser.SafeFileName, true);
-                    this.LogoPath.Text = Environment.CurrentDirectory + "/" + fileChooser.SafeFileName;
-                    ShowConfig();
+                    logoPath = Environment.CurrentDirectory + "/" + fileChooser.SafeFileName;
+                    ShowLogo(logoPath);
+                    LogoPath.Text = logoPath.Split('/')[logoPath.Split('/').Length - 1];
                 }
             }
             catch(Exception ex)
@@ -196,7 +198,7 @@ namespace ListeDePrixNovago
             try
             {
                 PriceListConfig config = new PriceListConfig();
-                config.LogoPath = LogoPath.Text;
+                config.LogoPath = logoPath;
                 config.Footer = FooterSet.Text;
                 if (IsValidityFooter.IsChecked == null)
                     config.IsValidityDateInFooter = false;
@@ -239,6 +241,7 @@ namespace ListeDePrixNovago
             {
                 PriceListConfig config = SaveXml.GetData(Environment.CurrentDirectory + "/config.xml");
                 this.config = config;
+                logoPath = config.LogoPath;
                 LogoPath.Text = config.LogoPath.Split('/')[config.LogoPath.Split('/').Length-1];
                 FooterSet.Text = config.Footer;
                 IsValidityFooter.IsChecked = config.IsValidityDateInFooter;
@@ -420,9 +423,17 @@ namespace ListeDePrixNovago
                 graphClient = graphAsync.Result;
                 teamsName = GetGroups(null, true);
                 teamsName.Sort((x,y) => String.Compare(x.Name,y.Name));
-                DropDownTeams.ItemsSource = null;
-                DropDownChannel.ItemsSource = null;
-                DropDownTeams.ItemsSource = teamsName;
+                if(DropDownChannel.ItemsSource != null)
+                    ((List<NovagoSite>)DropDownChannel.ItemsSource).Clear();
+                if (DropDownTeams.ItemsSource != null)
+                {
+                    ((List<NovagoSite>)DropDownTeams.ItemsSource).Clear();
+                    ((List<NovagoSite>)DropDownTeams.ItemsSource).AddRange(teamsName);
+                }
+                else
+                {
+                    DropDownTeams.ItemsSource = teamsName;
+                }
 
                 TeamsLabel.Visibility = Visibility.Hidden;
                 ChannelLabel.Visibility = Visibility.Hidden;

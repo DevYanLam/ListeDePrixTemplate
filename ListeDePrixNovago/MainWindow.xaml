@@ -15,9 +15,9 @@
         mc:Ignorable="d"
         Title="Liste de Prix Coop Novago" Height="664.466" Width="768.985" MinHeight="430" MinWidth="670" Icon="coop.ico">
     <Grid>
-        <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
             <TabItem Header="Liste de prix" Margin="0,0,-2,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Grid Background="#FFE5E5E5">
+                <Grid Background="White">
                     <Button x:Name="ExcelFileButton" Content="Fichier de prix..." HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top" Width="148" Height="28" Click="ExcelFileButton_Click"/>
                     <TextBox x:Name="ExcelFilePath" TabIndex="0" HorizontalAlignment="Left" Height="23" Margin="173,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304"/>
                     <Label Content="Envoyer à" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="65,89,0,0" VerticalAlignment="Top" Width="93"/>
@@ -44,10 +44,12 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Paramètres">
-                <Grid Background="#FFE5E5E5" Margin="0,0,2,2">
+                <Grid Background="White" Margin="0,0,2,2">
                     <Button x:Name="LogoButton" Content="Logo..." HorizontalAlignment="Left" Margin="20,16,0,0" VerticalAlignment="Top" Width="75" Height="29" Click="LogoButton_Click"/>
                     <TextBox x:Name="LogoPath" HorizontalAlignment="Left" Height="23" Margin="100,17,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="294"/>
-                    <Image x:Name="LogoPreview" HorizontalAlignment="Left" Height="103" Margin="399,17,0,0" VerticalAlignment="Top" Width="257"/>
+                    <Border HorizontalAlignment="Left" Margin="399,10,0,499" Width="305" BorderThickness="1" BorderBrush="Black" Padding="5">
+                        <Image x:Name="LogoPreview" Stretch="Fill" />
+                    </Border>
                     <Label Content="Pied de Page" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="20,50,0,0" VerticalAlignment="Top" Width="374"/>
                     <TextBox x:Name="FooterSet" AcceptsReturn="True" TabIndex="1" HorizontalAlignment="Left" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Height="368" Margin="16,109,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="374"/>
                     <Label Content="Serveur SMTP" HorizontalAlignment="Left" Margin="399,125,0,0" VerticalAlignment="Top" Width="108"/>
