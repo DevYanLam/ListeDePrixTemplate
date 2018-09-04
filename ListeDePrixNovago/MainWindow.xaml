@@ -20,19 +20,11 @@
                 <Grid Background="White">
                     <Button x:Name="ExcelFileButton" Content="Fichier de prix..." HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top" Width="148" Height="28" Click="ExcelFileButton_Click"/>
                     <TextBox x:Name="ExcelFilePath" TabIndex="0" HorizontalAlignment="Left" Height="23" Margin="173,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="304"/>
-                    <Label Content="Envoyer à" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="65,89,0,0" VerticalAlignment="Top" Width="93"/>
-                    <TextBox x:Name="RecipientsEmail" TabIndex="2" AcceptsReturn="True" HorizontalAlignment="Left" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" Height="79" Margin="173,89,0,0" TextWrapping="Wrap" Text="Séparez les adresses courriels par des points-virgules." VerticalAlignment="Top" Width="304" GotFocus="RemoveText" LostFocus="AddText"/>
-                    <Button x:Name="SendEmailButton" TabIndex="3" Content="Envoyer Liste De Prix" HorizontalAlignment="Left" Margin="128,259,0,0" VerticalAlignment="Top" Width="252" Click="SendEmailButton_Click" Height="25"/>
-                    <Button x:Name="SendCatalogButton" TabIndex="4" Content="Envoyer Catalogue De Prix" HorizontalAlignment="Left" Margin="128,299,0,0" VerticalAlignment="Top" Width="252" Click="SendCatalog_Click" Height="28"/>
-                    <TextBlock Margin="72,307,577,263" >           
-                        <Hyperlink x:Name="GabaritCatalog" x:Uid="catalogprix" NavigateUri="http://www.google.com" Click="GabaritCatalog_Click">
-                            Gabarit
-                        </Hyperlink>
-                    </TextBlock>
+                    <Button x:Name="SendEmailButton" TabIndex="3" Content="Envoyer" HorizontalAlignment="Left" Margin="128,259,0,0" VerticalAlignment="Top" Width="252" Click="SendButton_Click" Height="25"/>
                     <Label Content="Titre" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="65,58,0,0" VerticalAlignment="Top" Width="93"/>
                     <TextBox x:Name="TitleSet" TabIndex="1" HorizontalAlignment="Left" Height="26" Margin="173,58,0,0" TextWrapping="Wrap" Text="Liste de prix" VerticalAlignment="Top" Width="304"/>
-                    <ComboBox x:Name="DropDownPriceList" HorizontalAlignment="Left" VerticalAlignment="Top" Width="304" Margin="173,173,0,0"/>
-                    <Label Content="Liste de Prix" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="45,173,0,0" VerticalAlignment="Top" Width="113"/>
+                    <ComboBox x:Name="DropDownPriceList" HorizontalAlignment="Left" VerticalAlignment="Top" Width="304" Margin="173,89,0,0" Visibility="Hidden"/>
+                    <Label x:Name="ListeDePrixLabel" Content="Liste de Prix" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="45,89,0,0" VerticalAlignment="Top" Width="113" Visibility="Hidden"/>
                     <ListBox x:Name="ListBoxPrices" ItemsSource="{Binding}" HorizontalAlignment="Left" Height="165" Margin="482,30,0,0" VerticalAlignment="Top" Width="139" RenderTransformOrigin="0.5,0.5">
                         <ListBox.ItemTemplate>
                             <HierarchicalDataTemplate>
@@ -41,6 +33,8 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                     <TextBlock Margin="72,267,577,303" ><Hyperlink x:Name="GabaritListeDePrix" x:Uid="listeprix" NavigateUri="http://www.google.com" Click="GabaritListe_Click"><Run Text="Gabarit"/></Hyperlink></TextBlock>
+                    <CheckBox x:Name="IsSendEmail" Content="Envoyer Par Courriel" HorizontalAlignment="Left" Margin="173,122,0,0" VerticalAlignment="Top"/>
+                    <CheckBox x:Name="IsSendToMsTeams" Content="Déposer dans " HorizontalAlignment="Left" Margin="173,145,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Paramètres">

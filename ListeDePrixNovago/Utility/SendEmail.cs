@@ -23,21 +23,24 @@ namespace ListeDePrixNovago.PDFTemplate
         }
         public void SendPriceList(string fromAdd, string[] toAdd, string subject, string attachmentFileName, string body = "")
         {
-            MailMessage mail = new MailMessage();
-            mail.From = new MailAddress(fromAdd);
-            foreach(string add in toAdd)
+            using (Attachment attachment = new Attachment(attachmentFileName))
             {
-                mail.To.Add(new MailAddress(add));
-            }
-            mail.Subject = subject;
-            mail.Attachments.Add(new Attachment(attachmentFileName));
+                MailMessage mail = new MailMessage();
+                mail.From = new MailAddress(fromAdd);
+                foreach (string add in toAdd)
+                {
+                    mail.To.Add(new MailAddress(add));
+                }
+                mail.Subject = subject;
+                mail.Attachments.Add(attachment);
 
-            SmtpClient client = new SmtpClient(server,port);
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.UseDefaultCredentials = false;
-            client.Credentials = new NetworkCredential(username,password);
-            client.EnableSsl = true;
-            client.Send(mail);
+                SmtpClient client = new SmtpClient(server, port);
+                client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                client.UseDefaultCredentials = false;
+                client.Credentials = new NetworkCredential(username, password);
+                client.EnableSsl = true;
+                client.Send(mail);
+            }
         }
     }
 }

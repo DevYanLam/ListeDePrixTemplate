@@ -29,7 +29,7 @@ namespace ListeDePrixNovago
         private GraphServiceClient graphClient = null;
         private List<NovagoSite> teamsName;
         private string logoPath;
-       
+
         public MainWindow()
         {
             try
@@ -37,23 +37,23 @@ namespace ListeDePrixNovago
                 InitializeComponent();
                 ShowConfig();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 MessageBox.Show("Un problème est survenu");
             }
         }
 
-        private bool showPDF(TableType type)
+        private bool showPDF()
         {
             try
             {
                 //Create a PDF document
                 Document doc = new Document();
-                
+
 
                 //Create a section inside the document
                 Section template = doc.AddSection();
-                
+
                 template.PageSetup.RightMargin = 30;
                 template.PageSetup.LeftMargin = 30;
                 template.PageSetup.FooterDistance = new Unit(0, UnitType.Point);
@@ -72,15 +72,15 @@ namespace ListeDePrixNovago
                 Paragraph titre = template.Headers.FirstPage.AddParagraph(TitleSet.Text);
                 titre.Format.Font.Bold = true;
                 titre.Format.Alignment = ParagraphAlignment.Center;
-                titre.Format.Font.Size = new Unit(16,UnitType.Point);
+                titre.Format.Font.Size = new Unit(16, UnitType.Point);
 
                 template.AddParagraph();
                 template.AddParagraph();
                 template.AddParagraph();
 
                 //Excel Table
-                CreateTable(ExcelFilePath.Text, template, type, GetCheckedItems());
-                
+                CreateTable(ExcelFilePath.Text, template, GetCheckedItems());
+
                 //Footers
                 DateTime input = DateTime.Today;
                 int deltaMonday = System.DayOfWeek.Monday - input.DayOfWeek;
@@ -103,7 +103,7 @@ namespace ListeDePrixNovago
                 var p = Process.Start(pdfFileName);
                 p.WaitForExit();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Un problème est survenu durant la création du fichier PDF\n" + ex.Message);
                 return false;
@@ -111,19 +111,20 @@ namespace ListeDePrixNovago
             return true;
         }
 
-        private void CreateTable(string excelFilePath, Section section, TableType type, List<Price> priceList)
+        private void CreateTable(string excelFilePath, Section section, List<Price> priceList)
         {
             ExcelReader r = new ExcelReader(excelFilePath);
-            if (type == TableType.PriceList)
+            DataType type = r.TemplateType;
+            if (type == DataType.PriceList)
             {
                 Table t = section.AddTable();
                 t.KeepTogether = true;
                 if (DropDownPriceList.SelectedItem.ToString() != null)
-                    r.AddListPrice(t, DropDownPriceList.SelectedItem.ToString(), priceList);
+                    r.AddListPrice(section, priceList, DropDownPriceList.SelectedItem.ToString());
                 else
-                    MessageBox.Show("Veuillez sélectionner une liste de prix","Aucune liste de prix sélectionné", MessageBoxButton.OK);
+                    MessageBox.Show("Veuillez sélectionner une liste de prix", "Aucune liste de prix sélectionné", MessageBoxButton.OK);
             }
-            else if(type == TableType.CatalogList)
+            else if (type == DataType.CatalogList)
             {
                 r.AddPriceCatalogTables(section, priceList);
             }
@@ -139,7 +140,7 @@ namespace ListeDePrixNovago
                 b.EndInit();
                 this.LogoPreview.Source = b;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Impossible de présenter le logo");
             }
@@ -161,11 +162,11 @@ namespace ListeDePrixNovago
                     LogoPath.Text = logoPath.Split('/')[logoPath.Split('/').Length - 1];
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void ExcelFileButton_Click(object sender, RoutedEventArgs e)
@@ -178,16 +179,26 @@ namespace ListeDePrixNovago
 
                 if (fileChooser.ShowDialog() == true)
                 {
-                    string newPath = Environment.CurrentDirectory + "/" + fileChooser.SafeFileName;
-                    this.ExcelFilePath.Text = newPath;
-                    System.IO.File.Copy(fileChooser.FileName, newPath, true);
+                    this.ExcelFilePath.Text = fileChooser.FileName;
 
-                    ExcelReader re = new ExcelReader(newPath);
-                    DropDownPriceList.ItemsSource = re.GetListTypeList();
+                    ExcelReader re = new ExcelReader(fileChooser.FileName);
+                    var listOfPriceList = re.GetListTypeList();
+                    if (((List<string>)listOfPriceList).Count > 0)
+                    {
+                        DropDownPriceList.Visibility = Visibility.Visible;
+                        ListeDePrixLabel.Visibility = Visibility.Visible;
+                        DropDownPriceList.ItemsSource = listOfPriceList;
+                    }
+                    else
+                    {
+                        DropDownPriceList.Visibility = Visibility.Hidden;
+                        ListeDePrixLabel.Visibility = Visibility.Hidden;
+                    }
+
                     ListBoxPrices.ItemsSource = re.GetPriceColumns();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -210,7 +221,7 @@ namespace ListeDePrixNovago
                 config.SmtpPort = Int32.Parse(SmtpServerPort.Text);
                 config.SmtpUsername = SmtpUsernameSet.Text;
                 config.SmtpPassword = SmtpPasswordSet.Password;
-                if(DropDownChannel.SelectedValue != null && DropDownTeams.SelectedValue != null)
+                if (DropDownChannel.SelectedValue != null && DropDownTeams.SelectedValue != null)
                 {
                     config.TeamsGroupId = DropDownTeams.SelectedValue as string;
                     config.DriveItemId = DropDownChannel.SelectedValue as string;
@@ -227,7 +238,7 @@ namespace ListeDePrixNovago
 
                 ShowConfig();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Impossible de sauvegarder la configuration\n" + ex.Message);
             }
@@ -242,32 +253,40 @@ namespace ListeDePrixNovago
                 PriceListConfig config = SaveXml.GetData(Environment.CurrentDirectory + "/config.xml");
                 this.config = config;
                 logoPath = config.LogoPath;
-                LogoPath.Text = config.LogoPath.Split('/')[config.LogoPath.Split('/').Length-1];
+                LogoPath.Text = config.LogoPath.Split('/')[config.LogoPath.Split('/').Length - 1];
                 FooterSet.Text = config.Footer;
                 IsValidityFooter.IsChecked = config.IsValidityDateInFooter;
                 SmtpServerSet.Text = config.SmtpServer;
                 SmtpUsernameSet.Text = config.SmtpUsername;
                 SmtpPasswordSet.Password = config.SmtpPassword;
                 SmtpServerPort.Text = config.SmtpPort.ToString();
-                TeamsLabel.Content = config.TeamsGroupName;
-                ChannelLabel.Content = config.DriveItemName;
+                if (config.TeamsGroupName != null && config.DriveItemName != null)
+                {
+                    TeamsLabel.Content = config.TeamsGroupName;
+                    ChannelLabel.Content = config.DriveItemName;
+
+                    IsSendToMsTeams.Visibility = Visibility.Visible;
+                    IsSendToMsTeams.Content += "\nGROUPE : " + config.TeamsGroupName + "\nCANAL : " + config.DriveItemName;
+                }
+
                 ShowLogo(config.LogoPath);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Impossible de lire le fichier de configuration. Il est peut-être vide." + ex.Message);
             }
-            
+
         }
 
         private void SendEmail()
         {
-            if (MessageBox.Show("Voulez-vous envoyer ce document à " + RecipientsEmail.Text + "?", "Confirmation d'envoie", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            var dialog = new EmailPrompt();
+            if ((bool)IsSendEmail.IsChecked && dialog.ShowDialog() == true)
             {
                 try
                 {
                     SendEmail sm = new SendEmail(SmtpServerSet.Text, Int32.Parse(SmtpServerPort.Text), SmtpUsernameSet.Text, SmtpPasswordSet.Password);
-                    sm.SendPriceList(SmtpUsernameSet.Text, RecipientsEmail.Text.Split(';'), TitleSet.Text, pdfFileName);
+                    sm.SendPriceList(SmtpUsernameSet.Text, dialog.ResponseText.Split(';'), TitleSet.Text, pdfFileName);
                     MessageBox.Show("Le courriel a bien été envoyé");
                 }
                 catch (Exception ex)
@@ -279,7 +298,7 @@ namespace ListeDePrixNovago
 
         private void SendToTeams()
         {
-            if (MessageBox.Show("Voulez-vous importer le document vers Microsoft Teams", "Importation Microsoft Teams", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if ((bool)IsSendToMsTeams.IsChecked && MessageBox.Show("Voulez-vous vraiment importer le document vers Microsoft Teams", "Importation Microsoft Teams", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 try
                 {
@@ -298,7 +317,7 @@ namespace ListeDePrixNovago
 
                             var folder = graphClient.Groups[teamGroupId].Drive.Items[driveItemId].ItemWithPath(TitleSet.Text + ".pdf").Content.Request().PutAsync<DriveItem>(stream);
                             folder.Wait();
-                            
+
                             MessageBox.Show("Le fichier a bien téléchargé", "Téléchargement réussi", MessageBoxButton.OK);
                         }
                     }
@@ -317,24 +336,24 @@ namespace ListeDePrixNovago
         private List<Price> GetCheckedItems()
         {
             List<Price> priceList = new List<Price>();
-            foreach(var item in ListBoxPrices.Items)
+            foreach (var item in ListBoxPrices.Items)
             {
                 var i = item as Price;
-                if(i.IsChecked)
+                if (i.IsChecked)
                 {
                     priceList.Add(i);
                 }
             }
             return priceList;
         }
-        
+
         private List<NovagoSite> GetGroups(string siteId, bool isFirstExecution)
         {
             List<NovagoSite> tempSites = new List<NovagoSite>();
             var sites = graphClient.Groups.Request().GetAsync();
             sites.Wait();
 
-            foreach(var site in sites.Result)
+            foreach (var site in sites.Result)
             {
                 if (site.DeletedDateTime > DateTimeOffset.Now || site.DeletedDateTime is null)
                 {
@@ -345,7 +364,7 @@ namespace ListeDePrixNovago
                     });
                 }
             }
-            
+
             return tempSites;
         }
 
@@ -367,23 +386,14 @@ namespace ListeDePrixNovago
                     });
                 }
             }
-            
+
 
             return driveList;
         }
 
-        private void SendEmailButton_Click(object sender, RoutedEventArgs e)
+        private void SendButton_Click(object sender, RoutedEventArgs e)
         {
-            if (showPDF(TableType.PriceList))
-            {
-                SendEmail();
-                SendToTeams();
-            }
-        }
-
-        private void SendCatalog_Click(object sender, RoutedEventArgs e)
-        {
-            if (showPDF(TableType.CatalogList))
+            if (showPDF())
             {
                 SendEmail();
                 SendToTeams();
@@ -393,8 +403,8 @@ namespace ListeDePrixNovago
         public void RemoveText(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
-            if(tb.Text.Equals("Séparez les adresses courriels par des points-virgules."))
-            tb.Text = "";
+            if (tb.Text.Equals("Séparez les adresses courriels par des points-virgules."))
+                tb.Text = "";
         }
 
         public void AddText(object sender, EventArgs e)
@@ -422,8 +432,8 @@ namespace ListeDePrixNovago
                 graphAsync.Wait();
                 graphClient = graphAsync.Result;
                 teamsName = GetGroups(null, true);
-                teamsName.Sort((x,y) => String.Compare(x.Name,y.Name));
-                if(DropDownChannel.ItemsSource != null)
+                teamsName.Sort((x, y) => String.Compare(x.Name, y.Name));
+                if (DropDownChannel.ItemsSource != null)
                     ((List<NovagoSite>)DropDownChannel.ItemsSource).Clear();
                 if (DropDownTeams.ItemsSource != null)
                 {
@@ -443,7 +453,7 @@ namespace ListeDePrixNovago
                 CanalLabel.Visibility = Visibility.Visible;
                 DropDownChannel.Visibility = Visibility.Visible;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
@@ -457,11 +467,11 @@ namespace ListeDePrixNovago
                 Console.WriteLine(dropDown.SelectedValue);
                 DropDownChannel.ItemsSource = GetChannels(dropDown);
             }
-            catch(AggregateException ex)
+            catch (AggregateException ex)
             {
                 MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK);
             }
         }
-        
+
     }
 }

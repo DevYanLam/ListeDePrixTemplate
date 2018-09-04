@@ -1,0 +1,15 @@
+﻿<Window x:Class="ListeDePrixNovago.EmailPrompt"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ListeDePrixNovago"
+        mc:Ignorable="d"
+        Title="Email" Height="187.5" Width="538.347">
+    <StackPanel>
+        <TextBlock Text="Adresse(s) courriel" />
+        <TextBlock Text="Pour entrer plusieurs adresses, ajouter des ; entre elles." />
+        <TextBox x:Name="ResponseTextBox" Height="50" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" />
+        <Button Content="OK" Click="OKButton_Click" />
+    </StackPanel>
+</Window>
